@@ -1,0 +1,28 @@
+{
+  "name": "vite-plugin-commonjs",
+  "version": "0.2.6",
+  "description": "A pure JavaScript implementation for CommonJs",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vite-plugin/vite-plugin-commonjs.git"
+  },
+  "author": "草鞋没号 <308487730@qq.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^17.x.x",
+    "typescript": "^4.x.x",
+    "vite": "^2.x.x",
+    "vite-plugin-utils": "^0.1.0"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "commonjs",
+    "require"
+  ]
+}
