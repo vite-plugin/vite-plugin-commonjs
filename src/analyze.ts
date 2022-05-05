@@ -1,17 +1,20 @@
 import { AcornNode } from './types'
 
-// Supported transform statement types
-export enum StatementType {
+// Top-level scope statement types
+export enum TopLevelType {
+  // require('foo')
   ExpressionStatement = 'ExpressionStatement',
+  // const foo = rquire('foo')
   VariableDeclaration = 'VariableDeclaration',
-  ArrayExpression = 'ArrayExpression',
-  ObjectExpression = 'ObjectExpression',
+  // TODO: others top-level ...
 }
 
 export interface RequireStatement {
   node: AcornNode
   ancestors: AcornNode[]
-  nearestAncestor: AcornNode & { type: StatementType }
+  // If require statement located top-level scope, this will have a value
+  topLevelNode?: AcornNode & { type: TopLevelType }
+  functionScope?: AcornNode
 }
 
 export interface ExportsStatement {
@@ -33,17 +36,13 @@ export function analyzer(ast: AcornNode): Analyzed {
   simpleWalk(ast, {
     CallExpression(node, ancestors: AcornNode[]) {
       if (node.callee.name !== 'require') return
-      let nearestAncestor: RequireStatement['nearestAncestor']
 
-      if (isFunctionScope(ancestors)) {
-        // TODO: Nested scope
-      } else if (nearestAncestor = isImportTopLevelScope(ancestors) as RequireStatement['nearestAncestor']) {
-        analyzed.require.push({
-          node,
-          ancestors,
-          nearestAncestor,
-        })
-      }
+      analyzed.require.push({
+        node,
+        ancestors,
+        topLevelNode: findTopLevelScope(ancestors) as RequireStatement['topLevelNode'],
+        functionScope: findFunctionScope(ancestors),
+      })
     },
   })
 
@@ -76,40 +75,33 @@ function simpleWalk(
 
 simpleWalk.async = function simpleWalkAsync() { }
 
-function isFunctionScope(ancestors: AcornNode[]) {
-  return !!ancestors.find(an => [
+// The function node that wraps it will be returned
+function findFunctionScope(ancestors: AcornNode[]) {
+  return ancestors.find(an => [
     'FunctionDeclaration',
     'ArrowFunctionExpression',
   ].includes(an.type))
 }
 
 // Will be return nearset ancestor node
-function isImportTopLevelScope(ancestors: AcornNode[]): AcornNode {
+function findTopLevelScope(ancestors: AcornNode[]): AcornNode {
   const ances = ancestors.map(an => an.type).join()
   const arr = [...ancestors].reverse()
 
   // TODO
-  // CallExpression,CallExpression                  | require('id')()
-  // CallExpression,MemberExpression,CallExpression | require('id').foo()
+  // CallExpression,CallExpression                  | require('foo')()
+  // CallExpression,MemberExpression,CallExpression | require('foo').bar()
 
   if (/Program,ExpressionStatement,(CallExpression,|MemberExpression,){0,}CallExpression$/.test(ances)) {
-    // require('path');
-    // require('path').resolve;
-    return arr.find(e => e.type === StatementType.ExpressionStatement)
+    // require('foo')
+    // require('foo').bar
+    return arr.find(e => e.type === TopLevelType.ExpressionStatement)
   }
   if (/Program,VariableDeclaration,VariableDeclarator,(CallExpression,|MemberExpression,){0,}CallExpression$/.test(ances)) {
-    // const fs = require('fs');
-    // const readFile = require('fs').readFile;
-    // const { stat, cp: cpAlias } = require('fs');
-    return arr.find(e => e.type === StatementType.VariableDeclaration)
-  }
-  if (/Program,VariableDeclaration,VariableDeclarator,(ArrayExpression,|ObjectExpression,Property,){0,}(CallExpression,|MemberExpression,){0,}CallExpression$/.test(ances)) {
-    // const arr = [{ fs: require('./fs')}];
-    // const json = { fs: [require('./fs')]};
-    return arr.find(e => [
-      StatementType.ArrayExpression,
-      StatementType.ObjectExpression,
-    ].includes(e.type as StatementType))
+    // const foo = require('foo')
+    // const bar = require('foo').bar
+    // const { foo, bar: baz } = require('foo')
+    return arr.find(e => e.type === TopLevelType.VariableDeclaration)
   }
 }
 
