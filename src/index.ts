@@ -8,11 +8,11 @@ import {
 } from 'vite-plugin-utils'
 import cjs2esm from './cjs-esm'
 
-export interface CommonJsOptions {
+export interface Options {
   filter?: (id: string) => false | void
 }
 
-export default function commonjs(options: CommonJsOptions = {}): Plugin {
+export default function commonjs(options: Options = {}): Plugin {
   const plugin: Plugin = {
     name: 'vite-plugin-commonjs',
     transform(code, id) {

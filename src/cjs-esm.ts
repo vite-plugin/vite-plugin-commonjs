@@ -1,5 +1,5 @@
 import { Plugin } from 'vite'
-import { analyzer, StatementType } from './analyze'
+import { analyzer, TopLevelType } from './analyze'
 import { generateImport } from './generate-import'
 
 export default async function cjs2esm(
@@ -16,34 +16,30 @@ export default async function cjs2esm(
   for (const impt of [...imports].reverse()) {
     const {
       node,
-      nearestAncestor,
+      topLevelNode,
       importee: imptee,
       declaration,
       importName,
     } = impt
     const importee = imptee + ';'
-    let start: number, end: number
 
     let replaced: string
-    if (nearestAncestor.type === StatementType.ExpressionStatement) {
-      replaced = importee
-      start = nearestAncestor.start
-      end = nearestAncestor.end
-    } else if (nearestAncestor.type === StatementType.VariableDeclaration) {
-      replaced = declaration ? `${importee} ${declaration};` : importee
-      start = nearestAncestor.start
-      end = nearestAncestor.end
-    } else if ([
-      StatementType.ArrayExpression,
-      StatementType.ObjectExpression,
-    ].includes(nearestAncestor.type)) {
+    if (topLevelNode) {
+      if (topLevelNode.type === TopLevelType.ExpressionStatement) {
+        replaced = importee
+      } else if (topLevelNode.type === TopLevelType.VariableDeclaration) {
+        replaced = declaration ? `${importee} ${declaration};` : importee
+      }
+    } else {
+      // TODO: Merge duplicated require id
+      // 🚧-①
       importStatements.unshift(importee)
       replaced = importName
-      start = node.start
-      end = node.end
     }
 
     if (replaced) {
+      const start = topLevelNode ? topLevelNode.start : node.start
+      const end = topLevelNode ? topLevelNode.end : node.end
       code = code.slice(0, start) + replaced + code.slice(end)
     }
   }
