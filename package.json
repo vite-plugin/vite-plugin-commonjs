@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-commonjs",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A pure JavaScript implementation for CommonJs",
   "main": "dist/index.js",
   "repository": {
@@ -26,5 +26,11 @@
     "plugin",
     "commonjs",
     "require"
+  ],
+  "files": [
+    "dist",
+    "package-lock",
+    "package.json",
+    "README.md"
   ]
 }
