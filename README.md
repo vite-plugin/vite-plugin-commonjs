@@ -31,9 +31,11 @@ export interface Options {
 
 ## TODO
 
-❌ Nested scope(function-scope)  
-❌ Dynamic require id  
-✅ require statement  
+❌ Nested scope(function-scope)
+
+❌ Dynamic require id
+
+✅ require statement
 
 ```js
 // Top-level scope
@@ -55,7 +57,7 @@ const foo = [{ bar: require('foo').bar }]
 import * as __CJS_import__0__ from 'foo'; const foo = [{ bar: __CJS_import__0__.bar }]
 ```
 
-✅ exports statement  
+✅ exports statement
 
 ```js
 module.exports = fn() { };
