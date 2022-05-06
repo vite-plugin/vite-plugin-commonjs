@@ -63,7 +63,7 @@ export default async function cjs2esm(
   }
 
   if (exportRuntime) {
-    if (!moduleExportsHasInserted) {
+    if (exportRuntime.exportDefault && !moduleExportsHasInserted) {
       const { start } = exportRuntime.exportDefault.node
       code = code.slice(0, start) + `const ${exportRuntime.exportDefault.name} = ` + code.slice(start)
     }
@@ -72,7 +72,7 @@ export default async function cjs2esm(
     code = [
       polyfill + code,
       '// --------- vite-plugin-commonjs ---------',
-      exportRuntime.exportDefault.statement,
+      exportRuntime.exportDefault?.statement,
       exportRuntime.exportMembers,
     ].filter(Boolean).join('\n')
   }
