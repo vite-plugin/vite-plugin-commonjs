@@ -14,6 +14,7 @@ export interface Options {
 
 export default function commonjs(options: Options = {}): Plugin {
   const plugin: Plugin = {
+    apply: 'serve',
     name: 'vite-plugin-commonjs',
     transform(code, id) {
       const pureId = cleanUrl(id)
