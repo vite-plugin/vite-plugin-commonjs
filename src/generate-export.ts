@@ -30,9 +30,12 @@ export function generateExport(analyzed: Analyzed): ExportsRuntime | null {
     }
   }
 
-  const members = analyzed.exports
+  let members = analyzed.exports
     .map(exp => exp.token.right)
     .filter(member => member !== 'exports')
+    .filter(member => member !== 'default')
+  // Remove duplicate export
+  members = [...new Set(members)]
   const membersDeclaration = members
     .map(m => `const __CJS__export_${m}__ = (module.exports == null ? {} : module.exports).${m};`)
   const exportMembers = `
