@@ -19,6 +19,12 @@ export interface RequireStatement {
 
 export interface ExportsStatement {
   node: AcornNode
+  // module(left).exports(right) = 'foo'
+  // exports(left).bar(right) = 'bar'
+  token: {
+    left: string
+    right: string
+  }
 }
 
 export interface Analyzed {
@@ -34,7 +40,7 @@ export function analyzer(ast: AcornNode): Analyzed {
   }
 
   simpleWalk(ast, {
-    CallExpression(node, ancestors: AcornNode[]) {
+    CallExpression(node, ancestors) {
       if (node.callee.name !== 'require') return
 
       analyzed.require.push({
@@ -42,6 +48,18 @@ export function analyzer(ast: AcornNode): Analyzed {
         ancestors,
         topLevelNode: findTopLevelScope(ancestors) as RequireStatement['topLevelNode'],
         functionScope: findFunctionScope(ancestors),
+      })
+    },
+    AssignmentExpression(node, ancestors) {
+      if (node.left.type !== 'MemberExpression') return
+      if (!(node.left.object.type === 'Identifier' && ['module', 'exports'].includes(node.left.object.name))) return
+
+      analyzed.exports.push({
+        node,
+        token: {
+          left: node.left.object.name,
+          right: node.left.property.name,
+        },
       })
     },
   })
@@ -103,8 +121,4 @@ function findTopLevelScope(ancestors: AcornNode[]): AcornNode {
     // const { foo, bar: baz } = require('foo')
     return arr.find(e => e.type === TopLevelType.VariableDeclaration)
   }
-}
-
-function isExportTopLevelScope(ancestors: AcornNode[]) {
-
 }
