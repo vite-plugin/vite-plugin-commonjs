@@ -4,9 +4,9 @@ import { AcornNode } from './types'
 export interface ExportsRuntime {
   polyfill: string
   exportDefault?: {
-    node: AcornNode,
-    name: string,
-    statement: string,
+    node: AcornNode
+    name: string
+    statement: string
   }
   exportMembers?: string
 }
