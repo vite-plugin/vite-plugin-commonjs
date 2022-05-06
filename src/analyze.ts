@@ -52,7 +52,7 @@ export function analyzer(ast: AcornNode): Analyzed {
     },
     AssignmentExpression(node, ancestors) {
       if (node.left.type !== 'MemberExpression') return
-      if (!['module', 'exports'].includes(node.left.object.name)) return
+      if (!(node.left.object.type === 'Identifier' && ['module', 'exports'].includes(node.left.object.name))) return
 
       analyzed.exports.push({
         node,
