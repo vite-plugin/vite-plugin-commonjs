@@ -6,16 +6,12 @@ import {
 import { AcornNode } from './types'
 
 /**
- * 目前只考虑两种 require 情况
- * 
- * 1. 在顶层作用域，可转换的语句
- *   ExpressionStatement | require('acorn')
- *   VariableDeclaration | const aconr = require('acorn')
- * 2. 其他语句、作用域中会被提升到外层
+ * 目前将 require 分为量给
+ * 1. 在顶层作用域，可转换的语句；即可直接转换成 import 的语句
+ * 2. 在各种语句、作用域中 require 语句会被提升到底层作用域
  * 
  * TODO:
- * 
- * 1. 存在于各种语句中的 require 精细化处理
+ * 1. 在各种语句、作用域中 require 精细化处理
  * 2. function 作用域中的 require 语句考虑用 sync-ajax 配合 server 端返回 iife 格式
  */
 
@@ -30,7 +26,8 @@ export interface ImportRecord {
   // ↓↓↓↓ declaration ↓↓↓↓
   // const ast = __CJS_import__0__.parse()
   declaration?: string
-  // Auto generated name: __CJS_import__0__
+  // Auto generated name
+  // e.g. __CJS_import__0__
   importName?: string
 
   // ==============================================
@@ -60,7 +57,7 @@ export function generateImport(analyzed: Analyzed) {
       topLevelNode,
       importee: ''
     }
-    const importName = `__CJS_import__${count++}__`
+    const importName = `__CJS__promotion__import__${count++}__`
     // TODO: Dynamic require id
     const requireId = node.arguments[0].value
 
@@ -128,8 +125,7 @@ export function generateImport(analyzed: Analyzed) {
       }
     } else {
       // This is probably less accurate but is much cheaper than a full AST parse.
-      // 🐞 The require of the function scope will be promoted
-      // 🚧-①
+      // 🚧-①: 🐞 The require of the function scope will be promoted
       impt.importee = `import * as ${importName} from '${requireId}'`
       impt.importName = importName
     }
@@ -141,4 +137,4 @@ export function generateImport(analyzed: Analyzed) {
 }
 
 // TODO
-export function generateDynamicImport(analyzed: Analyzed) { }
+export function generateDynamicIdImport(analyzed: Analyzed) { }
