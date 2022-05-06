@@ -59,7 +59,9 @@ export function generateImport(analyzed: Analyzed) {
     }
     const importName = `__CJS__promotion__import__${count++}__`
     // TODO: Dynamic require id
-    const requireId = node.arguments[0].value
+    const requireId = node.arguments[0]?.value
+    // There may be no requireId `require()`
+    if (!requireId) continue
 
     if (topLevelNode) {
       switch (topLevelNode.type) {

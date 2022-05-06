@@ -13,3 +13,10 @@
 
 - 🌱 Support exports statement | 5c75137
 - 🐞 Apply serve | 8bc7bf9
+
+## [2022-05-04] v0.4.4
+
+- 🐞 export default empty value | a8897c5
+- 🐞 duplicate export | 217110f
+- 🐞 skip empty require id | c56173d
+- 🐞 extension detect | 579dda9
