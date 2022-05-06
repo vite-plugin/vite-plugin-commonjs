@@ -1,3 +1,4 @@
+import path from 'path'
 import { Plugin } from 'vite'
 import {
   sortPlugin,
@@ -5,6 +6,8 @@ import {
   cleanUrl,
   multilineCommentsRE,
   singlelineCommentsRE,
+  JS_EXTENSIONS,
+  KNOWN_SFC_EXTENSIONS,
 } from 'vite-plugin-utils'
 import cjs2esm from './cjs-esm'
 
@@ -19,9 +22,10 @@ export default function commonjs(options: Options = {}): Plugin {
     transform(code, id) {
       const pureId = cleanUrl(id)
 
-      if (/node_modules/.test(pureId) && !pureId.includes('.vite')) return
-      if (options.filter?.(pureId) === false) return
+      if (/node_modules/.test(pureId) /* && !pureId.includes('.vite') */) return
+      if (!JS_EXTENSIONS.concat(KNOWN_SFC_EXTENSIONS).includes(path.extname(pureId))) return
       if (!isCommonjs(code)) return
+      if (options.filter?.(pureId) === false) return
 
       return cjs2esm.call(this, code, id)
     }
