@@ -35,6 +35,8 @@ export interface Options {
 
 ❌ Dynamic require id
 
+❌ Secondary treatment `node_modules/.vite` 🤔
+
 ✅ require statement
 
 ```js
