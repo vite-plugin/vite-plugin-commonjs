@@ -77,7 +77,5 @@ export default async function cjs2esm(
     ].filter(Boolean).join('\n')
   }
 
-  // if (replaced) | code === _code | 原则上均属于冗余判断，原因是现在还未支持所有语法
-
   return code === _code ? null : code
 }
