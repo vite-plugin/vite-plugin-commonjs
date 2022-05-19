@@ -21,7 +21,7 @@ export default function commonjs(options: Options = {}): Plugin {
     transform(code, id) {
       const pureId = cleanUrl(id)
 
-      if (/node_modules/.test(pureId) /* && !pureId.includes('.vite') */) return
+      if (/node_modules\/(?!\.vite)/.test(pureId)) return 
       if (!JS_EXTENSIONS.concat(KNOWN_SFC_EXTENSIONS).includes(path.extname(pureId))) return
       if (!isCommonjs(code)) return
       if (options.filter?.(pureId) === false) return
