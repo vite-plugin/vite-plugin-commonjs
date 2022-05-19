@@ -1,7 +1,7 @@
 import {
   Analyzed,
   RequireStatement,
-  TopLevelType,
+  TopScopeType,
 } from './analyze'
 import { AcornNode } from './types'
 
@@ -29,7 +29,7 @@ import { AcornNode } from './types'
 
 export interface ImportRecord {
   node: AcornNode
-  topLevelNode: RequireStatement['topLevelNode']
+  topScopeNode: RequireStatement['topScopeNode']
   importee: string
   // e.g
   // const ast = require('acorn').parse()
@@ -60,13 +60,13 @@ export function generateImport(analyzed: Analyzed) {
     const {
       node,
       ancestors,
-      topLevelNode,
+      topScopeNode,
       // TODO: Nested scope
-      functionScope,
+      functionScopeNode: functionScope,
     } = req
     const impt: ImportRecord = {
       node,
-      topLevelNode,
+      topScopeNode,
       importee: ''
     }
     const importName = `__CJS__promotion__import__${count++}__`
@@ -75,16 +75,16 @@ export function generateImport(analyzed: Analyzed) {
     // There may be no requireId `require()`
     if (!requireId) continue
 
-    if (topLevelNode) {
-      switch (topLevelNode.type) {
-        case TopLevelType.ExpressionStatement:
+    if (topScopeNode) {
+      switch (topScopeNode.type) {
+        case TopScopeType.ExpressionStatement:
           // TODO: With members
           impt.importee = `import '${requireId}'`
           break
 
-        case TopLevelType.VariableDeclaration:
+        case TopScopeType.VariableDeclaration:
           // TODO: Multiple declaration
-          const VariableDeclarator = topLevelNode.declarations[0]
+          const VariableDeclarator = topScopeNode.declarations[0]
           const { /* Left */id, /* Right */init } = VariableDeclarator as AcornNode
 
           let LV: string | { key: string, value: string }[]

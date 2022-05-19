@@ -1,5 +1,5 @@
 import { Plugin } from 'vite'
-import { analyzer, TopLevelType } from './analyze'
+import { analyzer, TopScopeType } from './analyze'
 import { generateImport } from './generate-import'
 import { generateExport } from './generate-export'
 
@@ -20,7 +20,7 @@ export default async function cjs2esm(
   for (const impt of [...imports].reverse()) {
     const {
       node,
-      topLevelNode,
+      topScopeNode,
       importee: imptee,
       declaration,
       importName,
@@ -28,10 +28,10 @@ export default async function cjs2esm(
     const importee = imptee + ';'
 
     let importStatement: string
-    if (topLevelNode) {
-      if (topLevelNode.type === TopLevelType.ExpressionStatement) {
+    if (topScopeNode) {
+      if (topScopeNode.type === TopScopeType.ExpressionStatement) {
         importStatement = importee
-      } else if (topLevelNode.type === TopLevelType.VariableDeclaration) {
+      } else if (topScopeNode.type === TopScopeType.VariableDeclaration) {
         importStatement = declaration ? `${importee} ${declaration};` : importee
       }
     } else {
@@ -42,8 +42,8 @@ export default async function cjs2esm(
     }
 
     // require location
-    const start = topLevelNode ? topLevelNode.start : node.start
-    const end = topLevelNode ? topLevelNode.end : node.end
+    const start = topScopeNode ? topScopeNode.start : node.start
+    const end = topScopeNode ? topScopeNode.end : node.end
 
     if (exportRuntime?.exportDefault.node.start > start) {
       const { start: start2 } = exportRuntime.exportDefault.node
