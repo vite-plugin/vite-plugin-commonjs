@@ -6,13 +6,25 @@ import {
 import { AcornNode } from './types'
 
 /**
- * 目前将 require 分为量给
- * 1. 在顶层作用域，可转换的语句；即可直接转换成 import 的语句
- * 2. 在各种语句、作用域中 require 语句会被提升到底层作用域
+ * At present, divide `require()` into two cases
+ * 目前，将 require() 分为两种情况
+ * 
+ * ①:
+ * In the top-level scope and can be converted to `import`
+ * 
+ * ②:
+ * In the top-level scope, but it cannot be directly converted to `import`
+ * 在顶层作用域，但不能直接转换成 import
+ * 
+ * In function scope
+ * 在函数作用域中
  * 
  * TODO:
- * 1. 在各种语句、作用域中 require 精细化处理
- * 2. function 作用域中的 require 语句考虑用 sync-ajax 配合 server 端返回 iife 格式
+ * Fine processing of `require()` in various statements and scopes
+ * 在各种语句、作用域中 require() 精细化处理
+ * 
+ * For the `require()` statement in the function scope, consider using sync-ajax to cooperate with the server-side return code snippets and insert it into <head> tag
+ * function 作用域中的 require() 语句考虑用 sync-ajax 配合 server 端返回代码段并插入到 head 标签中
  */
 
 export interface ImportRecord {
