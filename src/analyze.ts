@@ -109,17 +109,13 @@ function findTopLevelScope(ancestors: AcornNode[]): AcornNode {
   const ances = ancestors.map(an => an.type).join()
   const arr = [...ancestors].reverse()
 
-  // TODO
-  // CallExpression,CallExpression                  | require('foo')()
-  // CallExpression,MemberExpression,CallExpression | require('foo').bar()
-
-  if (/Program,ExpressionStatement,(CallExpression,|MemberExpression,){0,}CallExpression$/.test(ances)) {
-    // require('foo')
-    // require('foo').bar
+  if (/Program,ExpressionStatement,(MemberExpression,)?CallExpression$/.test(ances)) {
+    // Program,ExpressionStatement,CallExpression                  | require('foo')
+    // Program,ExpressionStatement,MemberExpression,CallExpression | require('foo').bar
     return arr.find(e => e.type === TopScopeType.ExpressionStatement)
   }
-  if (/Program,VariableDeclaration,VariableDeclarator,(CallExpression,|MemberExpression,){0,}CallExpression$/.test(ances)) {
-    // const foo = require('foo')
+
+  if (/Program,VariableDeclaration,VariableDeclarator,(MemberExpression,)?CallExpression$/.test(ances)) {
     // const bar = require('foo').bar
     // const { foo, bar: baz } = require('foo')
     return arr.find(e => e.type === TopScopeType.VariableDeclaration)
