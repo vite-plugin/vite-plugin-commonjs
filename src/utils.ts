@@ -71,9 +71,11 @@ export class MagicString {
 
   public toString() {
     let str = this.str
-    for (const { loc: [start, end], content } of this.overwrites) {
-      // TODO: check start or end overlap
-      str = str.slice(0, start) + content + str.slice(end)
+    if (this.overwrites) {
+      for (const { loc: [start, end], content } of this.overwrites) {
+        // TODO: check start or end overlap
+        str = str.slice(0, start) + content + str.slice(end)
+      }
     }
     return this.starts + str + this.ends
   }
