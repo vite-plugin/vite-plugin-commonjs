@@ -33,9 +33,13 @@ export interface Options {
 
 ❌ Nested scope(function-scope)
 
+*It will be implemented in `v0.5.0`*
+
 ❌ Dynamic require id
 
-❌ Secondary treatment `node_modules/.vite` 🤔
+✅ `node_modules/.vite` 🤔
+
+This plugin only handles `require()` under `node_modules/.vite` and 🚧 **ignores** `exports`
 
 ✅ require statement
 
