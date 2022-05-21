@@ -31,9 +31,21 @@ export interface Options {
 
 ## TODO
 
-❌ Nested scope(function-scope)
+✅ Nested scope(function-scope) 🔨
 
-*It will be implemented in `v0.5.0`*
+At present `v0.4.5`, require statement in the function scope will be converted to dynamic import
+
+```js
+function (id) {
+  require(id)
+}
+↓
+function (id) {
+  import(id).then(m => m.default || m)
+}
+```
+
+*🚧 It is planned to be compatible with this case through Sync-Ajax in `v0.5.0` version*
 
 ❌ Dynamic require id
 
