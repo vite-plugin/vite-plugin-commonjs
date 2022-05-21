@@ -2,21 +2,22 @@ import { Plugin } from 'vite'
 import { analyzer, TopScopeType } from './analyze'
 import { generateImport } from './generate-import'
 import { generateExport } from './generate-export'
+import { MagicString } from './utils'
 
 export default async function cjs2esm(
   this: ThisParameterType<Plugin['transform']>,
-  _code: string,
+  code: string,
   id: string,
 ) {
-  const ast = this.parse(_code)
+  const ast = this.parse(code)
   const analyzed = analyzer(ast)
   const imports = generateImport(analyzed)
   const exportRuntime = generateExport(analyzed)
 
-  let code = _code
   const promotionImports = []
-  let moduleExportsHasInserted = false
+  const ms = new MagicString(code)
 
+  // Replace require statement
   for (const impt of [...imports].reverse()) {
     const {
       node,
@@ -41,41 +42,34 @@ export default async function cjs2esm(
       importStatement = importName
     }
 
-    // require location
-    const start = topScopeNode ? topScopeNode.start : node.start
-    const end = topScopeNode ? topScopeNode.end : node.end
-
-    if (exportRuntime?.exportDefault.node.start > start) {
-      const { start: start2 } = exportRuntime.exportDefault.node
-      // Replace module.exports statement
-      code = code.slice(0, start2) + `const ${exportRuntime.exportDefault.name} = ` + code.slice(start2)
-      moduleExportsHasInserted = true
-    }
 
     if (importStatement) {
-      // Replace require statement
-      code = code.slice(0, start) + importStatement + code.slice(end)
+      const start = topScopeNode ? topScopeNode.start : node.start
+      const end = topScopeNode ? topScopeNode.end : node.end
+      ms.overwrite(start, end, importStatement)
     }
   }
 
   if (promotionImports.length) {
     code = ['/* import-promotion-S */', ...promotionImports, '/* import-promotion-E */'].join(' ') + code
+    ms.prepend(['/* import-promotion-S */', ...promotionImports, '/* import-promotion-E */'].join(' '))
   }
 
   if (exportRuntime) {
-    if (exportRuntime.exportDefault && !moduleExportsHasInserted) {
+    if (exportRuntime.exportDefault) {
       const { start } = exportRuntime.exportDefault.node
-      code = code.slice(0, start) + `const ${exportRuntime.exportDefault.name} = ` + code.slice(start)
+      ms.overwrite(start, start, `const ${exportRuntime.exportDefault.name} = `)
     }
 
     const polyfill = ['/* export-runtime-S */', exportRuntime.polyfill, '/* export-runtime-E */'].join(' ')
-    code = [
-      polyfill + code,
-      '// --------- vite-plugin-commonjs ---------',
+    const _exports = [
+      '\n// --------- export-statement ---------',
       exportRuntime.exportDefault?.statement,
       exportRuntime.exportMembers,
     ].filter(Boolean).join('\n')
+    ms.prepend(polyfill).append(_exports)
   }
 
-  return code === _code ? null : code
+  const _code = ms.toString()
+  return _code === code ? null : _code
 }
