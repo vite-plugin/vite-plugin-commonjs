@@ -29,7 +29,6 @@ import { AcornNode } from './types'
 
 export interface ImportRecord {
   node: AcornNode
-  topScopeNode: RequireStatement['topScopeNode']
   importee: string
   // e.g
   // const ast = require('acorn').parse()
@@ -41,6 +40,8 @@ export interface ImportRecord {
   // Auto generated name
   // e.g. __CJS_import__0__
   importName?: string
+  topScopeNode?: RequireStatement['topScopeNode']
+  functionScopeNode?: AcornNode
 
   // ==============================================
 
@@ -62,19 +63,31 @@ export function generateImport(analyzed: Analyzed) {
       ancestors,
       topScopeNode,
       // TODO: Nested scope
-      functionScopeNode: functionScope,
+      functionScopeNode,
     } = req
     const impt: ImportRecord = {
       node,
+      importee: '',
       topScopeNode,
-      importee: ''
+      functionScopeNode,
     }
     const importName = `__CJS__promotion__import__${count++}__`
-    // TODO: Dynamic require id
-    const requireId = node.arguments[0]?.value
+    // TODO: Dynamic require id, e.g. require('path/' + filename)
+    let requireId: string
+    const requireIdNode = node.arguments[0]
     // There may be no requireId `require()`
-    if (!requireId) continue
+    if (!requireIdNode) continue
+    if (requireIdNode.type === 'Literal') {
+      requireId = requireIdNode.value
+    }
 
+    if (!requireId && !functionScopeNode) {
+      const codeSnippets = analyzed.code.slice(node.start, node.end)
+      throw new Error(`The following require statement cannot be converted.
+    -> ${codeSnippets}
+       ${'^'.repeat(codeSnippets.length)}`)
+    }
+    
     if (topScopeNode) {
       switch (topScopeNode.type) {
         case TopScopeType.ExpressionStatement:
@@ -137,9 +150,10 @@ export function generateImport(analyzed: Analyzed) {
           }
           break
       }
+    } else if (functionScopeNode) {
+      // 🚧-①: 🐞 The `require()` will be convert to `import()`
     } else {
       // This is probably less accurate but is much cheaper than a full AST parse.
-      // 🚧-①: 🐞 The require of the function scope will be promoted
       impt.importee = `import * as ${importName} from '${requireId}'`
       impt.importName = importName
     }

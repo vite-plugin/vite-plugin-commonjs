@@ -10,7 +10,7 @@ export default async function cjs2esm(
   id: string,
 ) {
   const ast = this.parse(code)
-  const analyzed = analyzer(ast)
+  const analyzed = analyzer(ast, code)
   const imports = generateImport(analyzed)
   // Bypass Pre-build
   const exportRuntime = id.includes('node_modules/.vite') ? null : generateExport(analyzed)
@@ -19,13 +19,14 @@ export default async function cjs2esm(
   const ms = new MagicString(code)
 
   // Replace require statement
-  for (const impt of [...imports].reverse()) {
+  for (const impt of imports) {
     const {
       node,
-      topScopeNode,
       importee: imptee,
       declaration,
       importName,
+      topScopeNode,
+      functionScopeNode,
     } = impt
     const importee = imptee + ';'
 
@@ -36,10 +37,14 @@ export default async function cjs2esm(
       } else if (topScopeNode.type === TopScopeType.VariableDeclaration) {
         importStatement = declaration ? `${importee} ${declaration};` : importee
       }
+    } else if (functionScopeNode) {
+      // 🚧-①: 🐞
+      ms.overwrite(node.callee.start, node.callee.end, 'import/*🚧-🐞*/')
+      ms.overwrite(node.end, node.end, '.then(m => m.default || m)')
     } else {
       // TODO: Merge duplicated require id
       // 🚧-①
-      promotionImports.unshift(importee)
+      promotionImports.push(importee)
       importStatement = importName
     }
 
@@ -47,6 +52,7 @@ export default async function cjs2esm(
     if (importStatement) {
       const start = topScopeNode ? topScopeNode.start : node.start
       const end = topScopeNode ? topScopeNode.end : node.end
+      // console.log(start, '------', end)
       ms.overwrite(start, end, importStatement)
     }
   }

@@ -32,13 +32,17 @@ export interface ExportsStatement {
 }
 
 export interface Analyzed {
+  ast: AcornNode
+  code: string
   require: RequireStatement[]
   exports: ExportsStatement[]
 }
 
-export function analyzer(ast: AcornNode): Analyzed {
+export function analyzer(ast: AcornNode, code: string): Analyzed {
 
   const analyzed: Analyzed = {
+    ast,
+    code,
     require: [],
     exports: [],
   }
