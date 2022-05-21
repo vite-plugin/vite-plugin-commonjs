@@ -52,7 +52,6 @@ export default async function cjs2esm(
     if (importStatement) {
       const start = topScopeNode ? topScopeNode.start : node.start
       const end = topScopeNode ? topScopeNode.end : node.end
-      // console.log(start, '------', end)
       ms.overwrite(start, end, importStatement)
     }
   }
