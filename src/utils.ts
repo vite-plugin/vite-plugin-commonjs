@@ -36,3 +36,45 @@ export function simpleWalk(
 }
 // TODO
 simpleWalk.async = function simpleWalkAsync() { }
+
+export class MagicString {
+  private overwrites: { loc: [number, number]; content: string }[]
+  private starts = ''
+  private ends = ''
+
+  constructor(
+    public str: string
+  ) { }
+
+  public append(content: string) {
+    this.ends += content
+    return this
+  }
+
+  public prepend(content: string) {
+    this.starts = content + this.starts
+    return this
+  }
+
+  public overwrite(start: number, end: number, content: string) {
+    if (end < start) {
+      throw new Error(`"end" con't be less than "start".`)
+    }
+    const item: typeof this.overwrites[0] = { loc: [start, end], content }
+    this.overwrites = this.overwrites
+      ? this.overwrites
+        .map(e => start >= e.loc[0] ? [item, e] : e)
+        .flat() as typeof this.overwrites
+      : [item]
+    return this
+  }
+
+  public toString() {
+    let str = this.str
+    for (const { loc: [start, end], content } of this.overwrites) {
+      // TODO: check start or end overlap
+      str = str.slice(0, start) + content + str.slice(end)
+    }
+    return this.starts + str + this.ends
+  }
+}
