@@ -1,4 +1,5 @@
 import { AcornNode } from './types'
+import { simpleWalk } from './utils'
 
 // 🎯-①: Top-level scope statement types, it also means statements that can be converted
 // 顶级作用于语句类型，这种可以被无缝换成 import
@@ -69,32 +70,6 @@ export function analyzer(ast: AcornNode): Analyzed {
 
   return analyzed
 }
-
-// ----------------------------------------------------------------------
-
-function simpleWalk(
-  ast: AcornNode,
-  visitors: {
-    [type: string]: (node: AcornNode, ancestors: AcornNode[]) => void | Promise<void>,
-  },
-  ancestors: AcornNode[] = [],
-) {
-  if (!ast) return
-  if (Array.isArray(ast)) {
-    for (const element of ast as AcornNode[]) {
-      simpleWalk(element, visitors, ancestors)
-    }
-  } else {
-    ancestors = ancestors.concat(ast)
-    for (const key of Object.keys(ast)) {
-      (typeof ast[key] === 'object' &&
-        simpleWalk(ast[key], visitors, ancestors))
-    }
-  }
-  visitors[ast.type]?.(ast, ancestors)
-}
-
-simpleWalk.async = function simpleWalkAsync() { }
 
 // The function node that wraps it will be returned
 function findFunctionScope(ancestors: AcornNode[]) {
