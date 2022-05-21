@@ -61,11 +61,23 @@ export class MagicString {
       throw new Error(`"end" con't be less than "start".`)
     }
     const item: typeof this.overwrites[0] = { loc: [start, end], content }
-    this.overwrites = this.overwrites
-      ? this.overwrites
-        .map(e => start >= e.loc[0] ? [item, e] : e)
-        .flat() as typeof this.overwrites
-      : [item]
+    if (!this.overwrites) {
+      this.overwrites = [item]
+    } else {
+      const index = this.overwrites.findIndex(e => e.loc[0] <= start)
+      if (index > -1) {
+        this.overwrites.splice(index, 0, item)
+      } else {
+        this.overwrites.push(item)
+      }
+    }
+
+    // 🐞
+    // this.overwrites = this.overwrites
+    //   ? this.overwrites.reduce(
+    //     (memo, e) => start >= e.loc[0] ? [...memo, item, e] : [...memo, e, item],
+    //     [])
+    //   : [item]
     return this
   }
 
