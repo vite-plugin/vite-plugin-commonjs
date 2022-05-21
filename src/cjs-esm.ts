@@ -58,7 +58,6 @@ export default async function cjs2esm(
   }
 
   if (promotionImports.length) {
-    code = ['/* import-promotion-S */', ...promotionImports, '/* import-promotion-E */'].join(' ') + code
     ms.prepend(['/* import-promotion-S */', ...promotionImports, '/* import-promotion-E */'].join(' '))
   }
 
