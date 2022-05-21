@@ -12,7 +12,8 @@ export default async function cjs2esm(
   const ast = this.parse(code)
   const analyzed = analyzer(ast)
   const imports = generateImport(analyzed)
-  const exportRuntime = generateExport(analyzed)
+  // Bypass Pre-build
+  const exportRuntime = id.includes('node_modules/.vite') ? null : generateExport(analyzed)
 
   const promotionImports = []
   const ms = new MagicString(code)
