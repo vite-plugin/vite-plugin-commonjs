@@ -1,23 +1,34 @@
 import {
   Analyzed,
   RequireStatement,
-  TopLevelType,
+  TopScopeType,
 } from './analyze'
 import { AcornNode } from './types'
 
 /**
- * 目前将 require 分为量给
- * 1. 在顶层作用域，可转换的语句；即可直接转换成 import 的语句
- * 2. 在各种语句、作用域中 require 语句会被提升到底层作用域
+ * At present, divide `require()` into two cases
+ * 目前，将 require() 分为两种情况
+ * 
+ * ①:
+ * In the top-level scope and can be converted to `import`
+ * 
+ * ②:
+ * In the top-level scope, but it cannot be directly converted to `import`
+ * 在顶层作用域，但不能直接转换成 import
+ * 
+ * In function scope
+ * 在函数作用域中
  * 
  * TODO:
- * 1. 在各种语句、作用域中 require 精细化处理
- * 2. function 作用域中的 require 语句考虑用 sync-ajax 配合 server 端返回 iife 格式
+ * Fine processing of `require()` in various statements and scopes
+ * 在各种语句、作用域中 require() 精细化处理
+ * 
+ * For the `require()` statement in the function scope, consider using sync-ajax to cooperate with the server-side return code snippets and insert it into <head> tag
+ * function 作用域中的 require() 语句考虑用 sync-ajax 配合 server 端返回代码段并插入到 head 标签中
  */
 
 export interface ImportRecord {
   node: AcornNode
-  topLevelNode: RequireStatement['topLevelNode']
   importee: string
   // e.g
   // const ast = require('acorn').parse()
@@ -29,6 +40,8 @@ export interface ImportRecord {
   // Auto generated name
   // e.g. __CJS_import__0__
   importName?: string
+  topScopeNode?: RequireStatement['topScopeNode']
+  functionScopeNode?: AcornNode
 
   // ==============================================
 
@@ -48,31 +61,43 @@ export function generateImport(analyzed: Analyzed) {
     const {
       node,
       ancestors,
-      topLevelNode,
+      topScopeNode,
       // TODO: Nested scope
-      functionScope,
+      functionScopeNode,
     } = req
     const impt: ImportRecord = {
       node,
-      topLevelNode,
-      importee: ''
+      importee: '',
+      topScopeNode,
+      functionScopeNode,
     }
     const importName = `__CJS__promotion__import__${count++}__`
-    // TODO: Dynamic require id
-    const requireId = node.arguments[0]?.value
+    // TODO: Dynamic require id, e.g. require('path/' + filename)
+    let requireId: string
+    const requireIdNode = node.arguments[0]
     // There may be no requireId `require()`
-    if (!requireId) continue
+    if (!requireIdNode) continue
+    if (requireIdNode.type === 'Literal') {
+      requireId = requireIdNode.value
+    }
 
-    if (topLevelNode) {
-      switch (topLevelNode.type) {
-        case TopLevelType.ExpressionStatement:
+    if (!requireId && !functionScopeNode) {
+      const codeSnippets = analyzed.code.slice(node.start, node.end)
+      throw new Error(`The following require statement cannot be converted.
+    -> ${codeSnippets}
+       ${'^'.repeat(codeSnippets.length)}`)
+    }
+    
+    if (topScopeNode) {
+      switch (topScopeNode.type) {
+        case TopScopeType.ExpressionStatement:
           // TODO: With members
           impt.importee = `import '${requireId}'`
           break
 
-        case TopLevelType.VariableDeclaration:
+        case TopScopeType.VariableDeclaration:
           // TODO: Multiple declaration
-          const VariableDeclarator = topLevelNode.declarations[0]
+          const VariableDeclarator = topScopeNode.declarations[0]
           const { /* Left */id, /* Right */init } = VariableDeclarator as AcornNode
 
           let LV: string | { key: string, value: string }[]
@@ -125,9 +150,10 @@ export function generateImport(analyzed: Analyzed) {
           }
           break
       }
+    } else if (functionScopeNode) {
+      // 🚧-①: 🐞 The `require()` will be convert to `import()`
     } else {
       // This is probably less accurate but is much cheaper than a full AST parse.
-      // 🚧-①: 🐞 The require of the function scope will be promoted
       impt.importee = `import * as ${importName} from '${requireId}'`
       impt.importName = importName
     }

@@ -4,12 +4,11 @@ import {
   sortPlugin,
   OfficialPlugins,
   cleanUrl,
-  multilineCommentsRE,
-  singlelineCommentsRE,
   JS_EXTENSIONS,
   KNOWN_SFC_EXTENSIONS,
 } from 'vite-plugin-utils'
 import cjs2esm from './cjs-esm'
+import { isCommonjs } from './utils'
 
 export interface Options {
   filter?: (id: string) => false | void
@@ -22,7 +21,7 @@ export default function commonjs(options: Options = {}): Plugin {
     transform(code, id) {
       const pureId = cleanUrl(id)
 
-      if (/node_modules/.test(pureId) /* && !pureId.includes('.vite') */) return
+      if (/node_modules\/(?!\.vite)/.test(pureId)) return 
       if (!JS_EXTENSIONS.concat(KNOWN_SFC_EXTENSIONS).includes(path.extname(pureId))) return
       if (!isCommonjs(code)) return
       if (options.filter?.(pureId) === false) return
@@ -36,14 +35,4 @@ export default function commonjs(options: Options = {}): Plugin {
     names: Object.values(OfficialPlugins).flat(),
     enforce: 'post',
   })
-}
-
-// ----------------------------------------------------------------------
-
-function isCommonjs(code: string) {
-  // Avoid matching the content of the comment
-  code = code
-    .replace(multilineCommentsRE, '')
-    .replace(singlelineCommentsRE, '')
-  return /\b(?:require|module|exports)\b/.test(code)
 }
