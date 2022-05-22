@@ -16,7 +16,7 @@ export function isCommonjs(code: string) {
 export function simpleWalk(
   ast: AcornNode,
   visitors: {
-    [type: string]: (node: AcornNode, ancestors: AcornNode[]) => void | Promise<void>,
+    [type: string]: (node: AcornNode, ancestors: AcornNode[]) => void,
   },
   ancestors: AcornNode[] = [],
 ) {
