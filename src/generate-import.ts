@@ -71,7 +71,7 @@ export function generateImport(analyzed: Analyzed) {
       topScopeNode,
       functionScopeNode,
     }
-    const importName = `__CJS__promotion__import__${count++}__`
+    const importName = `__CJS__import__${count++}__`
     // TODO: Dynamic require id, e.g. require('path/' + filename)
     let requireId: string
     const requireIdNode = node.arguments[0]
@@ -98,8 +98,9 @@ export function generateImport(analyzed: Analyzed) {
         case TopScopeType.VariableDeclaration:
           // TODO: Multiple declaration
           const VariableDeclarator = topScopeNode.declarations[0]
-          const { /* Left */id, /* Right */init } = VariableDeclarator as AcornNode
+          const { /* L-V */id, /* R-V */init } = VariableDeclarator as AcornNode
 
+          // Left value
           let LV: string | { key: string, value: string }[]
           if (id.type === 'Identifier') {
             LV = id.name
@@ -108,47 +109,55 @@ export function generateImport(analyzed: Analyzed) {
             for (const { key, value } of id.properties) {
               LV.push({ key: key.name, value: value.name })
             }
+          }  else {
+            throw new Error(`Unknown VariableDeclarator.id.type(L-V): ${id.type}`)
           }
 
+          const LV_str = (spe: string) => typeof LV === 'object'
+          ? LV.map(e => e.key === e.value ? e.key : `${e.key} ${spe} ${e.value}`).join(', ')
+          : ''
+
+          // Right value
           if (init.type === 'CallExpression') {
             if (typeof LV === 'string') {
               // const acorn = require('acorn')
               impt.importee = `import * as ${LV} from '${requireId}'`
             } else {
-              const str = LV
-                .map(e => e.key === e.value ? e.key : `${e.key} as ${e.value}`)
-                .join(', ')
               // const { parse } = require('acorn')
-              impt.importee = `import { ${str} } from '${requireId}'`
+              impt.importee = `import { ${LV_str('as')} } from '${requireId}'`
             }
           } else if (init.type === 'MemberExpression') {
-            const members: string[] = ancestors
-              .filter(an => an.type === 'MemberExpression')
-              .map(an => an.property.name)
+            // 🚧-②
+            const onlyOneMember = ancestors.find(an => an.type === 'MemberExpression').property.name
+            const importDefault = onlyOneMember === 'default'
             if (typeof LV === 'string') {
-              if (members.length === 1) {
-                if (members[0] === 'default') {
-                  // const acorn = require('acorn').default
-                  impt.importee = `import ${LV} from '${requireId}'`
-                } else {
-                  impt.importee = members[0] === LV
-                    // const parse = require('acorn').parse
-                    ? `import { ${LV} } from '${requireId}'`
-                    // const parse2 = require('acorn').parse
-                    : `import { ${members[0]} as ${LV} } from '${requireId}'`
-                }
+              if (importDefault) {
+                // const foo = require('foo').default
+                impt.importee = `import ${LV} from '${requireId}'`
               } else {
-                impt.importee = `import * as ${importName} from '${requireId}'`
-                // const bar = require('id').foo.bar
-                impt.declaration = `const ${LV} = ${importName}.${members.join('.')}`
+                impt.importee = onlyOneMember === LV
+                  // const bar = require('foo').bar
+                  ? `import { ${LV} } from '${requireId}'`
+                  // const barAlias = require('foo').bar
+                  : `import { ${onlyOneMember} as ${LV} } from '${requireId}'`
               }
             } else {
-              impt.importee = `import * as ${importName} from '${requireId}'`
-              // const { bar } = require('id').foo
-              impt.declaration = `const { ${LV.join(', ')} } = ${importName}.${members.join('.')}`
+              if (importDefault) {
+                // const { member1, member2 } = require('foo').default
+                impt.importee = `import ${importName} from '${requireId}'`
+              } else {
+                // const { member1, member2 } = require('foo').bar
+                impt.importee = `import { ${onlyOneMember} as ${importName} } from '${requireId}'`
+              }
+              impt.declaration = `const { ${LV_str(':')} } = ${importName}`
             }
+          } else {
+            throw new Error(`Unknown VariableDeclarator.init.type(R-V): ${id.init}`)
           }
           break
+
+          default:
+          throw new Error(`Unknown TopScopeType: ${topScopeNode}`)
       }
     } else if (functionScopeNode) {
       // 🚧-①: 🐞 The `require()` will be convert to `import()`
