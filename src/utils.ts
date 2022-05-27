@@ -60,31 +60,19 @@ export class MagicString {
     if (end < start) {
       throw new Error(`"end" con't be less than "start".`)
     }
-    const item: typeof this.overwrites[0] = { loc: [start, end], content }
     if (!this.overwrites) {
-      this.overwrites = [item]
-    } else {
-      const index = this.overwrites.findIndex(e => e.loc[0] <= start)
-      if (index > -1) {
-        this.overwrites.splice(index, 0, item)
-      } else {
-        this.overwrites.push(item)
-      }
+      this.overwrites = []
     }
 
-    // 🐞
-    // this.overwrites = this.overwrites
-    //   ? this.overwrites.reduce(
-    //     (memo, e) => start >= e.loc[0] ? [...memo, item, e] : [...memo, e, item],
-    //     [])
-    //   : [item]
+    this.overwrites.push({ loc: [start, end], content })
     return this
   }
 
   public toString() {
     let str = this.str
     if (this.overwrites) {
-      for (const { loc: [start, end], content } of this.overwrites) {
+      const arr = [...this.overwrites].sort((a, b) => b.loc[0] - a.loc[0])
+      for (const { loc: [start, end], content } of arr) {
         // TODO: check start or end overlap
         str = str.slice(0, start) + content + str.slice(end)
       }

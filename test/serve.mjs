@@ -15,7 +15,7 @@ const server = await createServer({
     {
       name: 'vite-plugin-commonjs-test',
       transform(code, id) {
-        if (id.endsWith('input.js')) {
+        if (/fixtures\/.+\/input\.js$/.test(id)) {
           // Write transformed code to output.js
           fs.writeFileSync(path.join(path.dirname(id), 'output.js'), code)
         }
@@ -24,4 +24,6 @@ const server = await createServer({
   ],
 })
 
-server.listen()
+await server.listen()
+const { address, port } = server.httpServer.address()
+server.config.logger.info(`[test/serve] 👉 dev server running at: http://${address}:${port}`, { timestamp: true })

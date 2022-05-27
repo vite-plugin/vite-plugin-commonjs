@@ -33,7 +33,7 @@ export interface Options {
 
 ✅ Nested scope(function-scope) 🔨
 
-At present `v0.4.5`, require statement in the function scope will be converted to dynamic import
+At present `v0.4`, require statement in the function scope will be converted to dynamic import
 
 ```js
 function (id) {
@@ -45,7 +45,7 @@ function (id) {
 }
 ```
 
-*🚧 It is planned to be compatible with this case through Sync-Ajax in `v0.5.0` version*
+*🚧 It is planned to be compatible with this case through Sync-Ajax in `v0.5` version*
 
 ❌ Dynamic require id
 
