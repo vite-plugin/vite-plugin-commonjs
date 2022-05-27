@@ -40,8 +40,13 @@
 - c5ae2c0 refactor: use utils.isCommonjs instead isCommonjs
 - 2a0f85a add utils.ts
 
-## [2022-05-11] v0.4.6
+## [2022-05-12] v0.4.6
 - 6f8c1d6 refactor: better code
 - 3f7e008 fix(🐞): improve MagicString.overwrite()
 
-3f7e008...6f8c1d6
+## [2022-05-13] v0.4.7
+
+- 4d44b15 (HEAD -> v0.4.7, tag: vite-plugin-commonjs@0.4.7) vite-plugin-commonjs@0.4.7
+- a9ad902 test: v0.4.7
+- 095c40f chore: comments
+- 2dc2637 refactor: imporve generate-export

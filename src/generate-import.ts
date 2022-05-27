@@ -6,23 +6,22 @@ import {
 import { AcornNode } from './types'
 
 /**
- * At present, divide `require()` into two cases
- * 目前，将 require() 分为两种情况
+ * At present, divide `require()` into three cases
+ * 目前，将 require() 分为三种情况
  * 
  * ①:
- * In the top-level scope and can be converted to `import`
+ * In the top-level scope and can be converted to `import` (🎯-①)
+ * 在顶层作用域，并且直接转换成 import
  * 
  * ②:
- * In the top-level scope, but it cannot be directly converted to `import`
- * 在顶层作用域，但不能直接转换成 import
+ * In the top-level scope, but it cannot be directly converted to `import`, the `require` will be promoted
+ * 在顶层作用域，但不能直接转换成 import，require 将会被提升
  * 
- * In function scope
- * 在函数作用域中
+ * ③:
+ * In a block level scope or function scope, it will be converted into `import()` (🚧-①: 🐞)
+ * 在块级作用域或函数作用域中，require 将会转换成 import()
  * 
  * TODO:
- * Fine processing of `require()` in various statements and scopes
- * 在各种语句、作用域中 require() 精细化处理
- * 
  * For the `require()` statement in the function scope, consider using sync-ajax to cooperate with the server-side return code snippets and insert it into <head> tag
  * function 作用域中的 require() 语句考虑用 sync-ajax 配合 server 端返回代码段并插入到 head 标签中
  */
@@ -40,7 +39,9 @@ export interface ImportRecord {
   // Auto generated name
   // e.g. __CJS_import__0__
   importName?: string
+  // 🎯-①
   topScopeNode?: RequireStatement['topScopeNode']
+  // 🚧-①
   functionScopeNode?: AcornNode
 
   // ==============================================
@@ -62,7 +63,6 @@ export function generateImport(analyzed: Analyzed) {
       node,
       ancestors,
       topScopeNode,
-      // TODO: Nested scope
       functionScopeNode,
     } = req
     const impt: ImportRecord = {

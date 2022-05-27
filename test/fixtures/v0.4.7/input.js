@@ -17,7 +17,7 @@ exports.foo = require('foo');
 exports.bar = require('foo').bar;
 exports.bar = require('foo').bar.baz;
 module.exports = require('foo').bar.baz;
-module.exports = require('foo').bar.baz();
+exports.default = module.exports;
 
 const routes = [{
   path: '/',
@@ -25,9 +25,12 @@ const routes = [{
 }];
 
 if (require('foo').bar) {
-  console.log(require('foo').bar.baz());
+  const result = require('foo').bar.baz();
+  if (result) {
+    module.exports = require('foo').bar.baz();
+  }
 }
 
 function fn1(path) {
-  require(path)
+  require(path);
 }
