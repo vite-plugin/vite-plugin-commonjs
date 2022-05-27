@@ -61,17 +61,18 @@ export default async function cjs2esm(
   }
 
   if (exportRuntime) {
-    if (exportRuntime.exportDefault) {
-      const { start } = exportRuntime.exportDefault.node
-      ms.overwrite(start, start, `const ${exportRuntime.exportDefault.name} = `)
-    }
+    const polyfill = [
+      '/* export-runtime-S */',
+      exportRuntime.polyfill,
+      '/* export-runtime-E */',
+    ].join(' ')
 
-    const polyfill = ['/* export-runtime-S */', exportRuntime.polyfill, '/* export-runtime-E */'].join(' ')
     const _exports = [
-      '\n// --------- export-statement ---------',
-      exportRuntime.exportDefault?.statement,
-      exportRuntime.exportMembers,
-    ].filter(Boolean).join('\n')
+      '/* export-statement-S */',
+      exportRuntime.exportDeclaration,
+      '/* export-statement-E */',
+    ].filter(Boolean)
+    .join('\n')
     ms.prepend(polyfill).append(_exports)
   }
 
