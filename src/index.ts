@@ -18,9 +18,11 @@ export default function commonjs(options: Options = {}): Plugin {
     name: 'vite-plugin-commonjs',
     transform(code, id) {
       const pureId = cleanUrl(id)
+      const extensions = JS_EXTENSIONS.concat(KNOWN_SFC_EXTENSIONS)
+      const { ext } = path.parse(pureId)
 
       if (/node_modules\/(?!\.vite)/.test(pureId)) return
-      if (!JS_EXTENSIONS.concat(KNOWN_SFC_EXTENSIONS).includes(path.extname(pureId))) return
+      if (!extensions.includes(ext)) return
       if (!isCommonjs(code)) return
       if (options.filter?.(pureId) === false) return
 
