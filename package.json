@@ -14,9 +14,6 @@
     "prepublishOnly": "npm run build",
     "test": "node test/serve.mjs"
   },
-  "dependencies": {
-    "vite-plugin-utils": "^0.1.0"
-  },
   "devDependencies": {
     "@types/node": "^17.x.x",
     "typescript": "^4.x.x",
