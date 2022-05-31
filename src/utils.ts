@@ -1,8 +1,32 @@
-import {
-  multilineCommentsRE,
-  singlelineCommentsRE,
-} from 'vite-plugin-utils'
-import { AcornNode } from './types'
+import { type AcornNode } from './types'
+
+// ------------------------------------------------- RegExp
+
+export const multilineCommentsRE = /\/\*(.|[\r\n])*?\*\//gm
+export const singlelineCommentsRE = /\/\/.*/g
+export const queryRE = /\?.*$/s
+export const hashRE = /#.*$/s
+
+// ------------------------------------------------- const
+
+export const JS_EXTENSIONS = [
+  '.mjs',
+  '.js',
+  '.ts',
+  '.jsx',
+  '.tsx',
+  '.cjs'
+]
+export const KNOWN_SFC_EXTENSIONS = [
+  '.vue',
+  '.svelte',
+]
+
+// ------------------------------------------------- function
+
+export function cleanUrl(url: string): string {
+  return url.replace(hashRE, '').replace(queryRE, '')
+}
 
 export function isCommonjs(code: string) {
   // Avoid matching the content of the comment
@@ -11,7 +35,6 @@ export function isCommonjs(code: string) {
     .replace(singlelineCommentsRE, '')
   return /\b(?:require|module|exports)\b/.test(code)
 }
-
 
 export function simpleWalk(
   ast: AcornNode,
