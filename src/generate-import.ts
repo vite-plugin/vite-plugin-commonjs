@@ -6,20 +6,22 @@ import {
 import { AcornNode } from './types'
 
 /**
- * At present, divide `require()` into three cases
+ * ```
+ * At present, divide `require(id: Literal)` into three cases
  * 目前，将 require() 分为三种情况
  * 
- * ①:
- * In the top-level scope and can be converted to `import` (🎯-①)
+ * ①(🎯)
+ * In the top-level scope and can be converted to `import` directly
  * 在顶层作用域，并且直接转换成 import
  * 
- * ②:
- * In the top-level scope, but it cannot be directly converted to `import`, the `require` will be promoted
- * 在顶层作用域，但不能直接转换成 import，require 将会被提升
+ * ②(🚧)
+ * If the `id` in `require(id: Literal)` is a literal string, the `require` statement will be promoted to the top-level scope and become an `import` statement
+ * 如果 require(id: Literal) 中的 id 是字面量字符串，require 语句将会被提升到顶级作用域，变成 import 语句
  * 
- * ③:
- * In a block level scope or function scope, it will be converted into `import()` (🚧-①: 🐞)
- * 在块级作用域或函数作用域中，require 将会转换成 import()
+ * ③(🚧)
+ * If the `id` in `require(dynamic-id)` is a dynamic-id, the `require` statement will be converted to `__matchRequireRuntime` function
+ * 如果 require(dynamic-id) 中的 id 动态 id，require 语句将会被转换成 __matchRequireRuntime 函数
+ * ```
  * 
  * TODO:
  * For the `require()` statement in the function scope, consider using sync-ajax to cooperate with the server-side return code snippets and insert it into <head> tag
@@ -28,30 +30,15 @@ import { AcornNode } from './types'
 
 export interface ImportRecord {
   node: AcornNode
-  importee: string
-  // e.g
-  // const ast = require('acorn').parse()
-  // ↓↓↓↓ generated ↓↓↓↓
-  // import * as __CJS_import__0__ from 'acorn'
-  // ↓↓↓↓ declaration ↓↓↓↓
-  // const ast = __CJS_import__0__.parse()
-  declaration?: string
-  // Auto generated name
-  // e.g. __CJS_import__0__
-  importName?: string
-  // 🎯-①
   topScopeNode?: RequireStatement['topScopeNode']
-  // 🚧-①
-  functionScopeNode?: AcornNode
-
-  // ==============================================
-
-  // const acorn(identifier) = require('acorn')
-  _identifier?: string
-  // const { parse(properties) } = require('acorn')
-  _properties?: Record<string, string>
-  // const alias = require('acorn').parse(members)
-  _members?: string[]
+  importee?: string
+  // e.g.
+  //   source code 👉 const ast = require('acorn').parse()
+  //               ↓
+  //   importee    👉 import * as __CJS_import__0__ from 'acorn'
+  //   declaration 👉 const ast = __CJS_import__0__.parse()
+  declaration?: string
+  importName?: string
 }
 
 export function generateImport(analyzed: Analyzed) {
@@ -63,32 +50,36 @@ export function generateImport(analyzed: Analyzed) {
       node,
       ancestors,
       topScopeNode,
-      functionScopeNode,
+      dynamic,
     } = req
-    const impt: ImportRecord = {
-      node,
-      importee: '',
-      topScopeNode,
-      functionScopeNode,
-    }
+    
+    // ③(🚧)
+    // Processed in dynamic-require.ts
+    if (dynamic === 'dynamic') continue
+
+    const impt: ImportRecord = { node, topScopeNode }
     const importName = `__CJS__import__${count++}__`
-    // TODO: Dynamic require id, e.g. require('path/' + filename)
-    let requireId: string
+    
     const requireIdNode = node.arguments[0]
-    // There may be no requireId `require()`
-    if (!requireIdNode) continue
+    let requireId: string
+    if (!requireIdNode) continue // Not value - require()
     if (requireIdNode.type === 'Literal') {
       requireId = requireIdNode.value
+    } else if (dynamic === 'Literal') {
+      requireId = requireIdNode.quasis[0].value.raw
     }
 
-    if (!requireId && !functionScopeNode) {
+
+    if (!requireId) {
       const codeSnippets = analyzed.code.slice(node.start, node.end)
       throw new Error(`The following require statement cannot be converted.
-    -> ${codeSnippets}
-       ${'^'.repeat(codeSnippets.length)}`)
+      -> ${codeSnippets}
+         ${'^'.repeat(codeSnippets.length)}`)
     }
     
     if (topScopeNode) {
+      // ①(🎯)
+
       switch (topScopeNode.type) {
         case TopScopeType.ExpressionStatement:
           // TODO: With members
@@ -109,13 +100,13 @@ export function generateImport(analyzed: Analyzed) {
             for (const { key, value } of id.properties) {
               LV.push({ key: key.name, value: value.name })
             }
-          }  else {
+          } else {
             throw new Error(`Unknown VariableDeclarator.id.type(L-V): ${id.type}`)
           }
 
           const LV_str = (spe: string) => typeof LV === 'object'
-          ? LV.map(e => e.key === e.value ? e.key : `${e.key} ${spe} ${e.value}`).join(', ')
-          : ''
+            ? LV.map(e => e.key === e.value ? e.key : `${e.key} ${spe} ${e.value}`).join(', ')
+            : ''
 
           // Right value
           if (init.type === 'CallExpression') {
@@ -156,12 +147,12 @@ export function generateImport(analyzed: Analyzed) {
           }
           break
 
-          default:
+        default:
           throw new Error(`Unknown TopScopeType: ${topScopeNode}`)
       }
-    } else if (functionScopeNode) {
-      // 🚧-①: 🐞 The `require()` will be convert to `import()`
     } else {
+      // ②(🚧)
+
       // This is probably less accurate but is much cheaper than a full AST parse.
       impt.importee = `import * as ${importName} from '${requireId}'`
       impt.importName = importName
@@ -172,6 +163,3 @@ export function generateImport(analyzed: Analyzed) {
 
   return imports
 }
-
-// TODO
-export function generateDynamicIdImport(analyzed: Analyzed) { }
