@@ -22,10 +22,6 @@ import { AcornNode } from './types'
  * If the `id` in `require(dynamic-id)` is a dynamic-id, the `require` statement will be converted to `__matchRequireRuntime` function
  * 如果 require(dynamic-id) 中的 id 动态 id，require 语句将会被转换成 __matchRequireRuntime 函数
  * ```
- * 
- * TODO:
- * For the `require()` statement in the function scope, consider using sync-ajax to cooperate with the server-side return code snippets and insert it into <head> tag
- * function 作用域中的 require() 语句考虑用 sync-ajax 配合 server 端返回代码段并插入到 head 标签中
  */
 
 export interface ImportRecord {
@@ -68,7 +64,6 @@ export function generateImport(analyzed: Analyzed) {
     } else if (dynamic === 'Literal') {
       requireId = requireIdNode.quasis[0].value.raw
     }
-
 
     if (!requireId) {
       const codeSnippets = analyzed.code.slice(node.start, node.end)
