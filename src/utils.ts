@@ -1,3 +1,4 @@
+import { builtinModules } from 'module'
 import { type AcornNode } from './types'
 
 // ------------------------------------------------- RegExp
@@ -20,6 +21,52 @@ export const JS_EXTENSIONS = [
 export const KNOWN_SFC_EXTENSIONS = [
   '.vue',
   '.svelte',
+]
+// https://github.com/vitejs/vite/blob/d6418605577319b2f92ea37081e34376bb47b286/packages/vite/src/node/constants.ts#L66
+export const KNOWN_ASSET_TYPES = [
+  // images
+  'png',
+  'jpg',
+  'jpeg',
+  'gif',
+  'svg',
+  'ico',
+  'webp',
+  'avif',
+
+  // media
+  'mp4',
+  'webm',
+  'ogg',
+  'mp3',
+  'wav',
+  'flac',
+  'aac',
+
+  // fonts
+  'woff2?',
+  'eot',
+  'ttf',
+  'otf',
+
+  // other
+  'webmanifest',
+  'pdf',
+  'txt'
+]
+export const KNOWN_CSS_TYPES = [
+  'css',
+  'less',
+  'sass',
+  'scss',
+  'styl',
+  'stylus',
+  'pcss',
+  'postcss',
+]
+export const builtins = [
+  ...builtinModules.map(m => !m.startsWith('_')),
+  ...builtinModules.map(m => !m.startsWith('_')).map(m => `node:${m}`)
 ]
 
 // ------------------------------------------------- function

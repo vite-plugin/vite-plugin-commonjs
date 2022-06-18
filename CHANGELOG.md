@@ -23,7 +23,7 @@
 
 ## [2022-05-21] v0.4.5
 
-- e546cb7 (HEAD -> v0.4.5, github/v0.4.5) docs: function-scope
+- e546cb7 docs: function-scope
 - 6d3c9d9 feat: 🚧-🐞 support function scope require()
 - 68add57 fix(🐞): re implementation overwrite()
 - abf41ed docs: v0.4.5
@@ -46,7 +46,17 @@
 
 ## [2022-05-13] v0.4.7
 
-- 4d44b15 (HEAD -> v0.4.7, tag: vite-plugin-commonjs@0.4.7) vite-plugin-commonjs@0.4.7
+- 4d44b15 vite-plugin-commonjs@0.4.7
 - a9ad902 test: v0.4.7
 - 095c40f chore: comments
 - 2dc2637 refactor: imporve generate-export
+
+## [2022-06-16] v0.5.0
+
+- 04be6ad docs: v0.5.0
+- eeecebf test: v0.5.0
+- 0ddb4ed remove cjs-esm.ts
+- 1198cdc feat(v0.5.0): support dynamic require
+- ec74309 faet: const - KNOWN_ASSET_TYPES, KNOWN_CSS_TYPES, builtins
+- 4346d86 chore: comments
+- 9560e5b feat(v0.5.0): dynamic-require.ts
