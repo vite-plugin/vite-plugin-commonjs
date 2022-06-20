@@ -55,7 +55,7 @@ export default function commonjs(options: Options = {}): Plugin {
       const extensions = JS_EXTENSIONS.concat(KNOWN_SFC_EXTENSIONS)
       const { ext } = path.parse(pureId)
 
-      if (/node_modules\/(?!\.vite)/.test(pureId)) return
+      if (/node_modules\/(?!\.vite\/)/.test(pureId)) return
       if (!extensions.includes(ext)) return
       if (!isCommonjs(code)) return
       if (options.filter?.(pureId) === false) return
