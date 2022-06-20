@@ -60,3 +60,10 @@
 - ec74309 faet: const - KNOWN_ASSET_TYPES, KNOWN_CSS_TYPES, builtins
 - 4346d86 chore: comments
 - 9560e5b feat(v0.5.0): dynamic-require.ts
+
+## [2022-06-20] v0.5.1
+
+- 961cbb5 docs: v0.5.1
+- 1584867 chore: more exact RegExp
+- 82301e3 refactor: `options.dynamic` instead of `options.depth`
+- 3b471ad chore: comments
