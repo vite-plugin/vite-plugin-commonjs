@@ -17,14 +17,19 @@ import { DynaimcRequire } from './dynamic-require'
 export interface Options {
   extensions?: string[]
   filter?: (id: string) => false | undefined
-  /**
-   * When use the dynamic-require, this option will change `./*` to `./** /*`
-   * @default true
-   */
-  depth?: boolean
+  dynamic?: {
+    /**
+     * 1. `true` - Match all possibilities as much as possible, More like `webpack`
+     * 2. `false` - It behaves more like `@rollup/plugin-dynamic-import-vars`
+     * @default true
+     */
+    loose?: boolean
+  }
   /**
    * If you want to exclude some files  
-   * e.g `type.d.ts`, `interface.ts`
+   * e.g.
+   *   `type.d.ts`
+   *   `interface.ts`
    */
   onFiles?: (files: string[], id: string) => typeof files | undefined
 }
