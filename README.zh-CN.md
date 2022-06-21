@@ -6,11 +6,11 @@
 
 [English](https://github.com/vite-plugin/vite-plugin-commonjs#readme) | 简体中文
 
-✅ alias
+✅ alias  
 ✅ bare module(node_modules)  
-✅ dynamic-require 和 👉 [Webpack](https://webpack.js.org/guides/dependency-management/#require-with-expression) `require('./foo/' + bar)`类似
+✅ dynamic-require 和 👉 [Webpack](https://webpack.js.org/guides/dependency-management/#require-with-expression) `require('./foo/' + bar)`类似  
 
-📦 开箱即用 
+📦 开箱即用  
 🔨 只在 `vite serve` 阶段起作用  
 🚚 在 `vite build` 阶段 CommonJs 语法由内置的 [@rollup/plugin-commonjs](https://www.npmjs.com/package/@rollup/plugin-commonjs) 插件处理  
 
