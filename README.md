@@ -1,5 +1,5 @@
 # vite-plugin-commonjs
-A pure JavaScript implementation for CommonJs
+A pure JavaScript implementation of CommonJs
 
 [![NPM version](https://img.shields.io/npm/v/vite-plugin-commonjs.svg?style=flat)](https://npmjs.org/package/vite-plugin-commonjs)
 [![NPM Downloads](https://img.shields.io/npm/dm/vite-plugin-commonjs.svg?style=flat)](https://npmjs.org/package/vite-plugin-commonjs)
@@ -34,19 +34,24 @@ export interface Options {
   filter?: (id: string) => false | undefined
   dynamic?: {
     /**
-     * 1. `true` - Match all possibilities as much as possible, More like `webpack`
+     * 1. `true` - Match all possibilities as much as possible, more like `webpack`
      * 2. `false` - It behaves more like `@rollup/plugin-dynamic-import-vars`
      * @default true
      */
     loose?: boolean
+    /**
+     * If you want to exclude some files  
+     * e.g.
+     * ```js
+     * commonjs({
+     *   dynamic: {
+     *     onFiles: files => files.filter(f => f !== 'types.d.ts')
+     *   }
+     * })
+     * ```
+     */
+    onFiles?: (files: string[], id: string) => typeof files | undefined
   }
-  /**
-   * If you want to exclude some files  
-   * e.g.
-   *   `type.d.ts`
-   *   `interface.ts`
-   */
-  onFiles?: (files: string[], id: string) => typeof files | undefined
 }
 ```
 
