@@ -31,8 +31,8 @@ export interface ImportRecord {
   // e.g.
   //   source code 👉 const ast = require('acorn').parse()
   //               ↓
-  //   importee    👉 import * as __CJS_import__0__ from 'acorn'
-  //   declaration 👉 const ast = __CJS_import__0__.parse()
+  //   importee    👉 import * as __CJS_import__ from 'acorn'
+  //   declaration 👉 const ast = __CJS_import__.parse()
   declaration?: string
   importName?: string
 }
@@ -113,7 +113,6 @@ export function generateImport(analyzed: Analyzed) {
               impt.importee = `import { ${LV_str('as')} } from '${requireId}'`
             }
           } else if (init.type === 'MemberExpression') {
-            // 🚧-②
             const onlyOneMember = ancestors.find(an => an.type === 'MemberExpression').property.name
             const importDefault = onlyOneMember === 'default'
             if (typeof LV === 'string') {

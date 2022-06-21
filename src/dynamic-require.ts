@@ -54,7 +54,7 @@ export class DynaimcRequire {
         analyzed.id,
         this.resolve,
         options.extensions!,
-        options.depth !== false,
+        options.dynamic?.loose !== false,
       )
       if (!globResult) continue
       const record: DynamicRequireRecord = { node }
@@ -118,7 +118,7 @@ async function globFiles(
   importer: string,
   resolve: Resolve,
   extensions: string[],
-  depth = true,
+  loose = true,
 ): Promise<{
   files?: string[]
   resolved?: Resolved
@@ -163,7 +163,7 @@ async function globFiles(
   }
 
   glob = tryFixGlobSlash(glob)
-  depth !== false && (glob = toDepthGlob(glob))
+  loose !== false && (glob = toDepthGlob(glob))
   glob.includes(PAHT_FILL) && (glob = glob.replace(PAHT_FILL, ''))
   glob.endsWith(EXT_FILL) && (glob = glob.replace(EXT_FILL, ''))
 

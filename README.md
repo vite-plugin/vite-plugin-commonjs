@@ -8,9 +8,10 @@ English | [简体中文](https://github.com/vite-plugin/vite-plugin-commonjs/blo
 
 ✅ alias  
 ✅ bare module(node_modules)  
-✅ dynamic-require `require('./foo/' + bar)`  
+✅ dynamic-require similar to 👉 [Webpack](https://webpack.js.org/guides/dependency-management/#require-with-expression) `require('./foo/' + bar)`
 
-🔨 Work only in the `vite serve` phase 
+📦 Out of the box  
+🔨 Work only in the `vite serve` phase  
 🚚 In the `vite build` phase, CommonJs syntax will be supported by builtin [@rollup/plugin-commonjs](https://www.npmjs.com/package/@rollup/plugin-commonjs)  
 
 ## Usage
@@ -29,9 +30,26 @@ export default {
 
 ```ts
 export interface Options {
-  filter?: (id: string) => false | void
+  extensions?: string[]
+  filter?: (id: string) => false | undefined
+  dynamic?: {
+    /**
+     * 1. `true` - Match all possibilities as much as possible, More like `webpack`
+     * 2. `false` - It behaves more like `@rollup/plugin-dynamic-import-vars`
+     * @default true
+     */
+    loose?: boolean
+  }
+  /**
+   * If you want to exclude some files  
+   * e.g.
+   *   `type.d.ts`
+   *   `interface.ts`
+   */
+  onFiles?: (files: string[], id: string) => typeof files | undefined
 }
 ```
+
 ## Cases
 
 [vite-plugin-commonjs/test](https://github.com/vite-plugin/vite-plugin-commonjs/tree/main/test)

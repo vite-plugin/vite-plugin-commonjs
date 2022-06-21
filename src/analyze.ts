@@ -4,11 +4,9 @@ import { simpleWalk } from './utils'
 // ①(🎯): Top-level scope statement types, it also means statements that can be converted
 // 顶级作用于语句类型，这种可以被无缝换成 import
 export enum TopScopeType {
-  // require('foo')
-  // require('foo').bar
+  // require('foo')[.bar]
   ExpressionStatement = 'ExpressionStatement',
-  // const foo = rquire('foo')
-  // const bar = rquire('foo').bar
+  // const bar = require('foo')[.bar]
   VariableDeclaration = 'VariableDeclaration',
 }
 
@@ -44,6 +42,10 @@ export interface Analyzed {
   exports: ExportsStatement[]
 }
 
+/**
+ * `require` statement analyzer  
+ * require 语法分析器  
+ */
 export function analyzer(ast: AcornNode, code: string, id: string): Analyzed {
 
   const analyzed: Analyzed = {
@@ -99,7 +101,14 @@ function checkDynamicId(node: AcornNode): RequireStatement['dynamic'] {
   return node.arguments[0]?.type !== 'Literal' ? 'dynamic' : undefined
 }
 
-// Will be return nearset ancestor node
+// At present, only the "MemberExpression" of the one-depth is considered as the top-level scope
+// 当前，只认为一层的 MemberExpression 顶级作用域
+// e.g.
+//   ✅ require('foo').bar
+//   ❌ require('foo').bar.baz
+//
+// Will be return nearset scope ancestor node (🎯-①)
+// 这将返回最近作用域的祖先节点
 function findTopLevelScope(ancestors: AcornNode[]): AcornNode {
   const ances = ancestors.map(an => an.type).join()
   const arr = [...ancestors].reverse()
@@ -110,7 +119,7 @@ function findTopLevelScope(ancestors: AcornNode[]): AcornNode {
     return arr.find(e => e.type === TopScopeType.ExpressionStatement)
   }
 
-  // ②(🚧): At present, "ancestors" contains only one depth of "MemberExpression"
+  // At present, "ancestors" contains only one depth of "MemberExpression"
   if (/Program,VariableDeclaration,VariableDeclarator,(MemberExpression,)?CallExpression$/.test(ances)) {
     // const bar = require('foo').bar
     // const { foo, bar: baz } = require('foo')
