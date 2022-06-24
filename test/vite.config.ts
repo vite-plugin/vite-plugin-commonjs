@@ -3,6 +3,8 @@ import fs from 'fs'
 import { defineConfig } from 'vite'
 import commonjs from '..'
 
+fs.rmSync(path.join(__dirname, 'src-output'), { force: true, recursive: true })
+
 export default defineConfig({
   root: __dirname,
   plugins: [
