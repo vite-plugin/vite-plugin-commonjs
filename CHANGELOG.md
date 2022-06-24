@@ -67,3 +67,9 @@
 - 1584867 chore: more exact RegExp
 - 82301e3 refactor: `options.dynamic` instead of `options.depth`
 - 3b471ad chore: comments
+
+## [2022-06-24] v0.5.2
+
+- a11aeaf test: v0.5.2
+- 83d9f3d docs: v0.5.2
+- b7e02cd refactor: move `options.onFiles` to `options.dynamic.onFiles`
