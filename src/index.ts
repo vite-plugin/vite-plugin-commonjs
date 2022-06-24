@@ -19,19 +19,24 @@ export interface Options {
   filter?: (id: string) => false | undefined
   dynamic?: {
     /**
-     * 1. `true` - Match all possibilities as much as possible, More like `webpack`
+     * 1. `true` - Match all possibilities as much as possible, more like `webpack`
      * 2. `false` - It behaves more like `@rollup/plugin-dynamic-import-vars`
      * @default true
      */
     loose?: boolean
+    /**
+     * If you want to exclude some files  
+     * e.g.
+     * ```js
+     * commonjs({
+     *   dynamic: {
+     *     onFiles: files => files.filter(f => f !== 'types.d.ts')
+     *   }
+     * })
+     * ```
+    */
+    onFiles?: (files: string[], id: string) => typeof files | undefined
   }
-  /**
-   * If you want to exclude some files  
-   * e.g.
-   *   `type.d.ts`
-   *   `interface.ts`
-   */
-  onFiles?: (files: string[], id: string) => typeof files | undefined
 }
 
 export default function commonjs(options: Options = {}): Plugin {
@@ -95,7 +100,6 @@ export default function commonjs(options: Options = {}): Plugin {
           promotionImports.push(importee)
           importStatement = importName
         }
-
 
         if (importStatement) {
           const start = topScopeNode ? topScopeNode.start : node.start
