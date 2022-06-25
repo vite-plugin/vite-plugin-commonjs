@@ -39,14 +39,19 @@ export interface Options {
      * @default true
      */
     loose?: boolean
+    /**
+     * 如果你想排除一些文件  
+     * e.g.
+     * ```js
+     * commonjs({
+     *   dynamic: {
+     *     onFiles: files => files.filter(f => f !== 'types.d.ts')
+     *   }
+     * })
+     * ```
+     */
+    onFiles?: (files: string[], id: string) => typeof files | undefined
   }
-  /**
-   * 如果你想排除一些文件  
-   * e.g.
-   *   `type.d.ts`
-   *   `interface.ts`
-   */
-  onFiles?: (files: string[], id: string) => typeof files | undefined
 }
 ```
 

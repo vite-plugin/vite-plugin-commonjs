@@ -62,8 +62,8 @@ export class DynaimcRequire {
       let { files, resolved, normally } = globResult
       // skip itself
       files = files.filter(f => path.join(path.dirname(id), f) !== id)
-      // execute the Options.onFiles
-      options.onFiles && (files = options.onFiles(files, id) || files)
+      // execute the dynamic.onFiles
+      options.dynamic?.onFiles && (files = options.dynamic?.onFiles(files, id) || files)
 
       if (normally) {
         record.normally = normally

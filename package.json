@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-commonjs",
-  "version": "0.5.1",
-  "description": "A pure JavaScript implementation for CommonJs",
+  "version": "0.5.2",
+  "description": "A pure JavaScript implementation of CommonJs",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
