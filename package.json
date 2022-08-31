@@ -15,13 +15,13 @@
     "test": "vite -c test/vite.config.ts"
   },
   "dependencies": {
-    "fast-glob": "^3.2.11",
-    "vite-plugin-dynamic-import": "^0.9.9"
+    "fast-glob": "~3.2.11",
+    "vite-plugin-dynamic-import": "~1.2.0"
   },
   "devDependencies": {
-    "@types/node": "^17.0.36",
-    "typescript": "^4.7.2",
-    "vite": "^3.0.0-alpha.11"
+    "@types/node": "^18.7.14",
+    "typescript": "^4.7.4",
+    "vite": "^3.0.9"
   },
   "keywords": [
     "vite",
