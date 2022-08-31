@@ -74,7 +74,7 @@ export default function commonjs(options: Options = {}): Plugin {
         : generateExport(analyzed)
       const dynamics = await dynaimcRequire.generateRuntime(analyzed)
 
-      const promotionImports = []
+      const hoistImports = []
       const ms = new MagicString(code)
 
       // require
@@ -97,7 +97,7 @@ export default function commonjs(options: Options = {}): Plugin {
           }
         } else {
           // TODO: Merge duplicated require id
-          promotionImports.push(importee)
+          hoistImports.push(importee)
           importStatement = importName
         }
 
@@ -108,8 +108,8 @@ export default function commonjs(options: Options = {}): Plugin {
         }
       }
 
-      if (promotionImports.length) {
-        ms.prepend(['/* import-promotion-S */', ...promotionImports, '/* import-promotion-E */'].join(' '))
+      if (hoistImports.length) {
+        ms.prepend(['/* import-hoist-S */', ...hoistImports, '/* import-hoist-E */'].join(' '))
       }
 
       // exports
