@@ -3,7 +3,7 @@ import fs from 'fs'
 import { defineConfig } from 'vite'
 import commonjs from '..'
 
-fs.rmSync(path.join(__dirname, 'src-output'), { force: true, recursive: true })
+fs.rmSync(path.join(__dirname, '__snapshots__'), { force: true, recursive: true })
 
 export default defineConfig({
   root: __dirname,
@@ -14,7 +14,7 @@ export default defineConfig({
       transform(code, id) {
         if (/\/src\//.test(id)) {
           // Write transformed code to output/
-          const filename = id.replace('src', 'src-output')
+          const filename = id.replace('src', '__snapshots__')
           const dirname = path.dirname(filename)
           if (!fs.existsSync(dirname)) fs.mkdirSync(dirname)
           fs.writeFileSync(filename, code)
