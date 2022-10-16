@@ -29,7 +29,7 @@ export class DynaimcRequire {
 
   constructor(
     private config: ResolvedConfig,
-    private options: Options,
+    private options: Options & { extensions: string[] },
     private resolve = new Resolve(config),
   ) { }
 
@@ -49,7 +49,7 @@ export class DynaimcRequire {
         analyzed.code,
         analyzed.id,
         this.resolve,
-        options.extensions!,
+        this.options.extensions,
         options.dynamic?.loose !== false,
       )
       if (!globResult) continue

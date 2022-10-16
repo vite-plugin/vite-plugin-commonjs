@@ -1,21 +1,19 @@
 import path from 'node:path'
 import type { Plugin, ResolvedConfig } from 'vite'
+import {
+  DEFAULT_EXTENSIONS,
+  KNOWN_SFC_EXTENSIONS,
+  KNOWN_ASSET_TYPES,
+  KNOWN_CSS_TYPES,
+} from 'vite-plugin-utils/constant'
+import { MagicString } from 'vite-plugin-utils/function'
 import { analyzer, TopScopeType } from './analyze'
 import { generateImport } from './generate-import'
 import { generateExport } from './generate-export'
-import {
-  cleanUrl,
-  isCommonjs,
-  JS_EXTENSIONS,
-  KNOWN_ASSET_TYPES,
-  KNOWN_CSS_TYPES,
-  KNOWN_SFC_EXTENSIONS,
-  MagicString,
-} from './utils'
+import { isCommonjs } from './utils'
 import { DynaimcRequire } from './dynamic-require'
 
 export interface Options {
-  extensions?: string[]
   filter?: (id: string) => false | undefined
   dynamic?: {
     /**
@@ -41,10 +39,7 @@ export interface Options {
 
 export default function commonjs(options: Options = {}): Plugin {
   let config: ResolvedConfig
-  const extensions = JS_EXTENSIONS
-    .concat(KNOWN_SFC_EXTENSIONS)
-    .concat(KNOWN_ASSET_TYPES)
-    .concat(KNOWN_CSS_TYPES)
+  let extensions = DEFAULT_EXTENSIONS
   let dynaimcRequire: DynaimcRequire
 
   return {
@@ -52,18 +47,23 @@ export default function commonjs(options: Options = {}): Plugin {
     name: 'vite-plugin-commonjs',
     configResolved(_config) {
       config = _config
-      options.extensions = [...new Set((config.resolve?.extensions || extensions).concat(options.extensions || []))]
-      dynaimcRequire = new DynaimcRequire(_config, options)
+      // https://github.com/vitejs/vite/blob/37ac91e5f680aea56ce5ca15ce1291adc3cbe05e/packages/vite/src/node/plugins/resolve.ts#L450
+      if (config.resolve?.extensions) extensions = config.resolve.extensions
+      dynaimcRequire = new DynaimcRequire(_config, {
+        ...options,
+        extensions: [
+          ...extensions,
+          ...KNOWN_SFC_EXTENSIONS,
+          ...KNOWN_ASSET_TYPES.map(type => '.' + type),
+          ...KNOWN_CSS_TYPES.map(type => '.' + type),
+        ],
+      })
     },
     async transform(code, id) {
-      const pureId = cleanUrl(id)
-      const extensions = JS_EXTENSIONS.concat(KNOWN_SFC_EXTENSIONS)
-      const { ext } = path.parse(pureId)
-
-      if (/node_modules\/(?!\.vite\/)/.test(pureId)) return
-      if (!extensions.includes(ext)) return
+      if (/node_modules\/(?!\.vite\/)/.test(id)) return
+      if (!extensions.includes(path.extname(id))) return
       if (!isCommonjs(code)) return
-      if (options.filter?.(pureId) === false) return
+      if (options.filter?.(id) === false) return
 
       const ast = this.parse(code)
       const analyzed = analyzer(ast, code, id)
