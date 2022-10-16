@@ -1,5 +1,6 @@
-import type { AcornNode } from './types'
 import { walk } from 'vite-plugin-utils/function'
+
+export type AcornNode<T = any> = import('rollup').AcornNode & Record<string, T>
 
 // ①(🎯): Top-level scope statement types, it also means statements that can be converted
 // 顶级作用于语句类型，这种可以被无缝换成 import

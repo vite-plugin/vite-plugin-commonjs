@@ -1,9 +1,9 @@
 import {
-  Analyzed,
-  RequireStatement,
+  type AcornNode,
+  type Analyzed,
+  type RequireStatement,
   TopScopeType,
 } from './analyze'
-import { AcornNode } from './types'
 
 /**
  * ```

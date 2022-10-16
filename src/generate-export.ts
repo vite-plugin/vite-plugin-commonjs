@@ -1,4 +1,4 @@
-import { Analyzed } from './analyze'
+import type { Analyzed } from './analyze'
 
 export interface ExportsRuntime {
   polyfill: string
