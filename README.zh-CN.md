@@ -26,11 +26,10 @@ export default {
 }
 ```
 
-## API
+## API <sub><sup>(Define)</sup></sub>
 
 ```ts
 export interface Options {
-  extensions?: string[]
   filter?: (id: string) => false | undefined
   dynamic?: {
     /**

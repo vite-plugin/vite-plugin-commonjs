@@ -1,5 +1,5 @@
-import { AcornNode } from './types'
-import { simpleWalk } from './utils'
+import type { AcornNode } from './types'
+import { walk } from 'vite-plugin-utils/function'
 
 // ①(🎯): Top-level scope statement types, it also means statements that can be converted
 // 顶级作用于语句类型，这种可以被无缝换成 import
@@ -56,7 +56,7 @@ export function analyzer(ast: AcornNode, code: string, id: string): Analyzed {
     exports: [],
   }
 
-  simpleWalk(ast, {
+  walk.sync(ast, {
     CallExpression(node, ancestors) {
       if (node.callee.name !== 'require') return
 
@@ -71,7 +71,7 @@ export function analyzer(ast: AcornNode, code: string, id: string): Analyzed {
         dynamic: checkDynamicId(node),
       })
     },
-    AssignmentExpression(node, ancestors) {
+    AssignmentExpression(node) {
       if (node.left.type !== 'MemberExpression') return
       if (!(node.left.object.type === 'Identifier' && ['module', 'exports'].includes(node.left.object.name))) return
 
@@ -109,7 +109,7 @@ function checkDynamicId(node: AcornNode): RequireStatement['dynamic'] {
 //
 // Will be return nearset scope ancestor node (🎯-①)
 // 这将返回最近作用域的祖先节点
-function findTopLevelScope(ancestors: AcornNode[]): AcornNode {
+function findTopLevelScope(ancestors: AcornNode[]): AcornNode | undefined {
   const ances = ancestors.map(an => an.type).join()
   const arr = [...ancestors].reverse()
 
