@@ -1,8 +1,9 @@
-import { builtinModules } from 'module'
+import { builtinModules } from 'node:module'
 import { type AcornNode } from './types'
 
 // ------------------------------------------------- RegExp
 
+export const normallyImporteeRE = /^\.{1,2}\/[.-/\w]+(\.\w+)$/
 export const multilineCommentsRE = /\/\*(.|[\r\n])*?\*\//gm
 export const singlelineCommentsRE = /\/\/.*/g
 export const queryRE = /\?.*$/s
@@ -108,7 +109,7 @@ export function simpleWalk(
 simpleWalk.async = function simpleWalkAsync() { }
 
 export class MagicString {
-  private overwrites: { loc: [number, number]; content: string }[]
+  private overwrites!: { loc: [number, number]; content: string }[]
   private starts = ''
   private ends = ''
 

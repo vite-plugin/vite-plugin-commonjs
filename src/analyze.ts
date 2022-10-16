@@ -109,7 +109,7 @@ function checkDynamicId(node: AcornNode): RequireStatement['dynamic'] {
 //
 // Will be return nearset scope ancestor node (🎯-①)
 // 这将返回最近作用域的祖先节点
-function findTopLevelScope(ancestors: AcornNode[]): AcornNode {
+function findTopLevelScope(ancestors: AcornNode[]): AcornNode | undefined {
   const ances = ancestors.map(an => an.type).join()
   const arr = [...ancestors].reverse()
 

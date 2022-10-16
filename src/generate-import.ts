@@ -48,14 +48,14 @@ export function generateImport(analyzed: Analyzed) {
       topScopeNode,
       dynamic,
     } = req
-    
+
     // ③(🚧)
     // Processed in dynamic-require.ts
     if (dynamic === 'dynamic') continue
 
     const impt: ImportRecord = { node, topScopeNode }
     const importName = `__CJS__import__${count++}__`
-    
+
     const requireIdNode = node.arguments[0]
     let requireId: string
     if (!requireIdNode) continue // Not value - require()
@@ -65,13 +65,13 @@ export function generateImport(analyzed: Analyzed) {
       requireId = requireIdNode.quasis[0].value.raw
     }
 
-    if (!requireId) {
+    if (!requireId!) {
       const codeSnippets = analyzed.code.slice(node.start, node.end)
       throw new Error(`The following require statement cannot be converted.
       -> ${codeSnippets}
          ${'^'.repeat(codeSnippets.length)}`)
     }
-    
+
     if (topScopeNode) {
       // ①(🎯)
 
@@ -113,7 +113,7 @@ export function generateImport(analyzed: Analyzed) {
               impt.importee = `import { ${LV_str('as')} } from '${requireId}'`
             }
           } else if (init.type === 'MemberExpression') {
-            const onlyOneMember = ancestors.find(an => an.type === 'MemberExpression').property.name
+            const onlyOneMember = ancestors.find(an => an.type === 'MemberExpression')?.property.name
             const importDefault = onlyOneMember === 'default'
             if (typeof LV === 'string') {
               if (importDefault) {

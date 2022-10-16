@@ -2,7 +2,7 @@ import { Analyzed } from './analyze'
 
 export interface ExportsRuntime {
   polyfill: string
-  exportDeclaration: string 
+  exportDeclaration: string
 }
 
 export function generateExport(analyzed: Analyzed): ExportsRuntime | null {
@@ -11,8 +11,8 @@ export function generateExport(analyzed: Analyzed): ExportsRuntime | null {
   }
 
   const memberDefault = analyzed.exports
-  // Find `module.exports` or `exports.default`
-  .find(exp => exp.token.left === 'module' || exp.token.right === 'default')
+    // Find `module.exports` or `exports.default`
+    .find(exp => exp.token.left === 'module' || exp.token.right === 'default')
 
   let members = analyzed.exports
     // Exclude `module.exports` and `exports.default`
@@ -20,7 +20,7 @@ export function generateExport(analyzed: Analyzed): ExportsRuntime | null {
     .map(exp => exp.token.right)
   // Remove duplicate export
   members = [...new Set(members)]
-  
+
   const membersDeclaration = members.map(
     m => `const __CJS__export_${m}__ = (module.exports == null ? {} : module.exports).${m}`,
   )

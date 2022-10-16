@@ -1,4 +1,4 @@
-import path from 'path'
+import path from 'node:path'
 import type { Plugin, ResolvedConfig } from 'vite'
 import { analyzer, TopScopeType } from './analyze'
 import { generateImport } from './generate-import'
@@ -88,7 +88,7 @@ export default function commonjs(options: Options = {}): Plugin {
         } = impt
         const importee = imptee + ';'
 
-        let importStatement: string
+        let importStatement: string | undefined
         if (topScopeNode) {
           if (topScopeNode.type === TopScopeType.ExpressionStatement) {
             importStatement = importee
