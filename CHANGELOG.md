@@ -1,3 +1,17 @@
+## 0.5.3 (2022-10-16)
+
+- ee0a882 `src-output` -> `__snapshots__`
+- 16593ff v0.5.3
+- 2a5752b docs: v0.5.3
+- 236730a refactor: use vite-plugin-utils
+- bb793a5 chore: update config
+- 1148671 feat: support `"type": "module"`
+- f590da1 chore: `"strict": true`
+- cf98458 bump deps
+- 04f95f7 chore: bump deps
+- 0434172 chore: update comments
+
+---
 
 ## [2022-05-04] v0.3.0
 
