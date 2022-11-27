@@ -72,17 +72,19 @@ export function generateImport(analyzed: Analyzed) {
          ${'^'.repeat(codeSnippets.length)}`)
     }
 
-    if (topScopeNode) {
+    if (/* 🚨-① topScopeNode */false) {
       // ①(🎯)
 
+      // @ts-ignore
       switch (topScopeNode.type) {
         case TopScopeType.ExpressionStatement:
-          // TODO: With members
+          // TODO: With members - e.g. `require().foo`
           impt.importee = `import '${requireId}'`
           break
 
         case TopScopeType.VariableDeclaration:
           // TODO: Multiple declaration
+          // @ts-ignore
           const VariableDeclarator = topScopeNode.declarations[0]
           const { /* L-V */id, /* R-V */init } = VariableDeclarator as AcornNode
 
@@ -93,6 +95,7 @@ export function generateImport(analyzed: Analyzed) {
           } else if (id.type === 'ObjectPattern') {
             LV = []
             for (const { key, value } of id.properties) {
+              // @ts-ignore
               LV.push({ key: key.name, value: value.name })
             }
           } else {
@@ -149,7 +152,7 @@ export function generateImport(analyzed: Analyzed) {
 
       // This is probably less accurate but is much cheaper than a full AST parse.
       impt.importee = `import * as ${importName} from '${requireId}'`
-      impt.importName = importName
+      impt.importName = `${importName}.default || ${importName}` // Loose
     }
 
     imports.push(impt)

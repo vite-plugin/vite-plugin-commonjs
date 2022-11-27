@@ -120,6 +120,12 @@ function findTopLevelScope(ancestors: AcornNode[]): AcornNode | undefined {
     return arr.find(e => e.type === TopScopeType.ExpressionStatement)
   }
 
+  // TODO(#15): Loose conversion of `exports` is required to get elegant import statements, vice versa.
+  //            需要松散的 exports 转换，才能得到优雅的 import 语句，反之亦然。
+  // 🚨-①: Vite also does the same. All statements are imported as `*`, which is simple and easy to implement. :)
+  //       Vite 也是这么做的，所有语句都以 * 导入，即简单又好实现。
+  return
+
   // At present, "ancestors" contains only one depth of "MemberExpression"
   if (/Program,VariableDeclaration,VariableDeclarator,(MemberExpression,)?CallExpression$/.test(ances)) {
     // const bar = require('foo').bar
