@@ -1,3 +1,42 @@
+## 0.6.0 (2022-11-27)
+
+#### More like Vite, loose syntax!
+
+**0.6.x**
+
+```js
+const { foo } = require('foo')
+↓
+const { foo } = __CJS__import__0__.default || __CJS__import__0__
+```
+
+```js
+const bar = require('bar')
+↓
+import * as __CJS__import__0__ from '/bar'
+const bar = __CJS__import__0__.default || __CJS__import__0__
+```
+
+**0.5.x**
+
+```js
+const { foo } = require('foo')
+↓
+import { foo } from 'foo'
+```
+
+```js
+const bar = require('bar')
+↓
+import * as __CJS__import__0__ from '/bar'
+const bar = __CJS__import__0__
+```
+
+#### Main commit
+
+- eda5464 v0.6.0
+- b5f7089 refactor!: loose syntax convert #15
+
 ## 0.5.3 (2022-10-16)
 
 - ee0a882 `src-output` -> `__snapshots__`
