@@ -1,4 +1,4 @@
-/* export-runtime-S */ const module = { exports: {} }; const exports = module.exports; /* export-runtime-E */
+/* export-runtime-S */ var module = { exports: {} }; var exports = module.exports; /* export-runtime-E */
 module.exports = 'module-exports/hello.cjs'
 /* export-statement-S */
 const __CJS__export_default__ = (module.exports == null ? {} : module.exports).default || module.exports;

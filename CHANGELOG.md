@@ -1,3 +1,14 @@
+## 0.6.1 (2022-12-10)
+
+- b163947 v0.6.1
+- 232042f feat: cjs examples
+- 4ad7a9b fix: `var` instead `const` #17
+
+```diff
+- const module = { exports: {} }; const exports = module.exports;
++ var module = { exports: {} }; var exports = module.exports;
+```
+
 ## 0.6.0 (2022-11-27)
 
 #### More like Vite, loose syntax!
