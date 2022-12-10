@@ -31,7 +31,7 @@ export function generateExport(analyzed: Analyzed): ExportsRuntime | null {
   }
 
   return {
-    polyfill: 'const module = { exports: {} }; const exports = module.exports;',
+    polyfill: 'var module = { exports: {} }; var exports = module.exports;',
     exportDeclaration: `
 ${membersDeclaration.join(';\n')};
 export {
