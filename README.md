@@ -30,7 +30,7 @@ export default {
 
 ```ts
 export interface Options {
-  filter?: (id: string) => false | undefined
+  filter?: (id: string) => boolean | undefined
   dynamic?: {
     /**
      * 1. `true` - Match all possibilities as much as possible, more like `webpack`
