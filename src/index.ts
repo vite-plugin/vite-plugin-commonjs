@@ -14,7 +14,7 @@ import { isCommonjs } from './utils'
 import { DynaimcRequire } from './dynamic-require'
 
 export interface Options {
-  filter?: (id: string) => false | undefined
+  filter?: (id: string) => boolean | undefined
   dynamic?: {
     /**
      * 1. `true` - Match all possibilities as much as possible, more like `webpack`
@@ -60,7 +60,7 @@ export default function commonjs(options: Options = {}): Plugin {
       })
     },
     async transform(code, id) {
-      if (/node_modules\/(?!\.vite\/)/.test(id)) return
+      if (/node_modules\/(?!\.vite\/)/.test(id) && !options.filter?.(id)) return
       if (!extensions.includes(path.extname(id))) return
       if (!isCommonjs(code)) return
       if (options.filter?.(id) === false) return
