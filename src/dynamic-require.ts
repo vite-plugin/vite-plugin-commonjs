@@ -10,7 +10,7 @@ import {
 } from 'vite-plugin-dynamic-import'
 import { normalizePath, relativeify } from 'vite-plugin-utils/function'
 import type { Options } from '.'
-import type { AcornNode, Analyzed } from './analyze'
+import type { Analyzed } from './analyze'
 import { normallyImporteeRE } from './utils'
 
 export interface DynamicRequireRecord {

@@ -1,5 +1,4 @@
 import {
-  type AcornNode,
   type Analyzed,
   type RequireStatement,
   TopScopeType,
