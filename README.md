@@ -54,6 +54,20 @@ export interface Options {
 }
 ```
 
+#### node_modules
+
+```js
+commonjs({
+  filter(id) {
+    // `node_modules` is exclude by default, so we need to include it explicitly
+    // https://github.com/vite-plugin/vite-plugin-commonjs/blob/v0.7.0/src/index.ts#L123-L125
+    if (id.includes('node_modules/xxx')) {
+      return true
+    }
+  }
+})
+```
+
 ## Cases
 
 [vite-plugin-commonjs/test](https://github.com/vite-plugin/vite-plugin-commonjs/tree/main/test)
