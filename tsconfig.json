@@ -1,15 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
-    "module": "ES2022",
+    "target": "ES2022",
+    "module": "ESNext",
     "esModuleInterop": true,
     "moduleResolution": "Node",
-    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "strict": true,
+    "allowJs": true,
     "declaration": true,
-    "outDir": "dist",
-    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "strict": true
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "outDir": "types",
+    "emitDeclarationOnly": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src"]
 }
