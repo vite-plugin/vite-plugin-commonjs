@@ -1,3 +1,16 @@
+## 0.7.0 (2023-04-30)
+
+- e9eb5f0 refactor(test): integrate vitest 🌱
+- 0c892f1 chore: bump deps
+- 750fd4b chore: cleanup
+- 4691bcc feat: `glob` files log
+- 80f46f0 refactor: cleanup
+- 7d6a47f chore: backup `v0.5.3`
+- 782db06 docs: v0.7.0
+- d3207f3 refactor(build): better scripts
+- e69a65a refactor: better support `node_modules` #23
+- 62a8cd9 chore: cleanup types
+
 ## 0.6.2 (2023-03-12)
 
 - enhancement: support node_modules | #19
