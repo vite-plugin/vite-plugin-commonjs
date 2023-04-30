@@ -1,4 +1,4 @@
-/* export-runtime-S */ var module = { exports: {} }; var exports = module.exports; /* export-runtime-E *//* import-hoist-S */ import * as __CJS__import__0__ from './dynamic'; /* import-hoist-E */
+/* [vite-plugin-commonjs] export-runtime-S */ var module = { exports: {} }; var exports = module.exports; /* [vite-plugin-commonjs] export-runtime-E *//* [vite-plugin-commonjs] import-hoist-S */ import * as __CJS__import__0__ from './dynamic'; /* [vite-plugin-commonjs] import-hoist-E */
 const { hello, world } = __CJS__import__0__.default || __CJS__import__0__
 
 // ❌ `exports` exported members are dynamic.
@@ -21,9 +21,9 @@ import cjs from './cjs'
 
 cjs: ${JSON.stringify(cjs)}
 `
-/* export-statement-S */
+/* [vite-plugin-commonjs] export-statement-S */
 const __CJS__export_msg__ = (module.exports == null ? {} : module.exports).msg;
 export {
   __CJS__export_msg__ as msg,
 }
-/* export-statement-E */
+/* [vite-plugin-commonjs] export-statement-E */

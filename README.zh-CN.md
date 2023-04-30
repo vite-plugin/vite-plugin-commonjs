@@ -54,6 +54,20 @@ export interface Options {
 }
 ```
 
+#### node_modules
+
+```js
+commonjs({
+  filter(id) {
+    // 默认会排除 `node_modules`，所以必须显式的包含它explicitly
+    // https://github.com/vite-plugin/vite-plugin-commonjs/blob/v0.7.0/src/index.ts#L123-L125
+    if (id.includes('node_modules/xxx')) {
+      return true
+    }
+  }
+})
+```
+
 ## 案例
 
 [vite-plugin-commonjs/test](https://github.com/vite-plugin/vite-plugin-commonjs/tree/main/test)

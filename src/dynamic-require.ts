@@ -1,17 +1,16 @@
 import path from 'node:path'
 import type { ResolvedConfig } from 'vite'
-import fastGlob from 'fast-glob'
 import {
-  type Resolved,
   Resolve,
-  dynamicImportToGlob,
   mappingPath,
-  toLooseGlob,
+  globFiles,
 } from 'vite-plugin-dynamic-import'
-import { normalizePath, relativeify } from 'vite-plugin-utils/function'
-import type { Options } from '.'
-import type { AcornNode, Analyzed } from './analyze'
-import { normallyImporteeRE } from './utils'
+import { normalizePath, COLOURS } from 'vite-plugin-utils/function'
+import {
+  type Options,
+  TAG,
+} from '.'
+import type { Analyzed } from './analyze'
 
 export interface DynamicRequireRecord {
   node: AcornNode
@@ -39,33 +38,41 @@ export class DynaimcRequire {
     const importCache = new Map<string, string>(/* import-id, import-name */)
     const records: DynamicRequireRecord[] = []
 
-    for (const req of analyzed.require) {
-      const { node, dynamic } = req
+    for (const { dynamic, node } of analyzed.require) {
       if (dynamic !== 'dynamic') continue
 
-      const globResult = await globFiles(
-        node,
-        analyzed.code,
-        analyzed.id,
-        this.resolve,
-        this.options.extensions,
-        options.dynamic?.loose !== false,
-      )
+      const importExpression = analyzed.code.slice(node.start, node.end)
+      const globResult = await globFiles({
+        importeeNode: node.arguments[0],
+        importExpression,
+        importer: analyzed.id,
+        resolve: this.resolve,
+        extensions: this.options.extensions,
+        loose: options.dynamic?.loose !== false,
+      })
       if (!globResult) continue
       const record: DynamicRequireRecord = { node }
 
       let { files, resolved, normally } = globResult
-      // skip itself
-      files = files!.filter(f => normalizePath(path.join(path.dirname(id), f)) !== id)
-      // execute the dynamic.onFiles
-      options.dynamic?.onFiles && (files = options.dynamic?.onFiles(files, id) || files)
 
       if (normally) {
         record.normally = normally
         continue
       }
 
-      if (!files?.length) continue
+      if (!files?.length) {
+        console.log(
+          TAG,
+          COLOURS.yellow(`no files matched: ${importExpression}\n`),
+          `  file: ${analyzed.id}`,
+        )
+        continue
+      }
+
+      // skip itself
+      files = files.filter(f => normalizePath(path.join(path.dirname(id), f)) !== id)
+      // execute the dynamic.onFiles
+      options.dynamic?.onFiles && (files = options.dynamic?.onFiles(files, id) || files)
 
       const maps = mappingPath(
         files,
@@ -107,78 +114,4 @@ ${cases.join('\n')}
 
     return records.length ? records : null
   }
-}
-
-async function globFiles(
-  /** ImportExpression */
-  node: AcornNode,
-  code: string,
-  importer: string,
-  resolve: Resolve,
-  extensions: string[],
-  loose = true,
-): Promise<{
-  files?: string[]
-  resolved?: Resolved
-  /** After `expressiontoglob()` processing, it may become a normally path */
-  normally?: string
-} | undefined> {
-  let files: string[]
-  let resolved: Resolved | undefined
-  let normally: string
-
-  const PAHT_FILL = '####/'
-  const EXT_FILL = '.extension'
-  let glob: string | null
-  let globRaw!: string
-
-  glob = await dynamicImportToGlob(
-    node.arguments[0],
-    code.slice(node.start, node.end),
-    async (raw) => {
-      globRaw = raw
-      resolved = await resolve.tryResolve(raw, importer)
-      if (resolved) {
-        raw = resolved.import.resolved
-      }
-      if (!path.extname(raw)) {
-        // Bypass extension restrict
-        raw = raw + EXT_FILL
-      }
-      if (/^\.\/\*\.\w+$/.test(raw)) {
-        // Bypass ownDirectoryStarExtension (./*.ext)
-        raw = raw.replace('./*', `./${PAHT_FILL}*`)
-      }
-      return raw
-    },
-  )
-  if (!glob) {
-    if (normallyImporteeRE.test(globRaw)) {
-      normally = globRaw
-      return { normally }
-    }
-    return
-  }
-
-  // @ts-ignore
-  const globs = [].concat(loose ? toLooseGlob(glob) : glob)
-    .map((g: any) => {
-      g.includes(PAHT_FILL) && (g = g.replace(PAHT_FILL, ''))
-      g.endsWith(EXT_FILL) && (g = g.replace(EXT_FILL, ''))
-      return g
-    })
-  const fileGlobs = globs
-    .map(g => path.extname(g)
-      ? g
-      // If not ext is not specified, fill necessary extensions
-      // e.g.
-      //   `./foo/*` -> `./foo/*.{js,ts,vue,...}`
-      : g + `.{${extensions.map(e => e.replace(/^\./, '')).join(',')}}`
-    )
-
-  files = fastGlob
-    .sync(fileGlobs, { cwd: /* 🚧-① */path.dirname(importer) })
-    .map(file => relativeify(file))
-
-  return { files, resolved }
 }

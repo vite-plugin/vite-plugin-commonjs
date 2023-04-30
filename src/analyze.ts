@@ -1,7 +1,5 @@
 import { walk } from 'vite-plugin-utils/function'
 
-export type AcornNode<T = any> = import('rollup').AcornNode & Record<string, T>
-
 // ①(🎯): Top-level scope statement types, it also means statements that can be converted
 // 顶级作用于语句类型，这种可以被无缝换成 import
 export enum TopScopeType {
@@ -12,11 +10,13 @@ export enum TopScopeType {
 }
 
 export interface RequireStatement {
+  /** CallExpression */
   node: AcornNode
   ancestors: AcornNode[]
   /**
    * If require statement located top-level scope ant it is convertible, this will have a value(🎯-①)  
    * 如果 require 在顶级作用于，并且是可转换 import 的，那么 topScopeNode 将会被赋值  
+   * @deprecated 🤔
    */
   topScopeNode?: AcornNode & { type: TopScopeType }
   dynamic?:
@@ -69,7 +69,7 @@ export function analyzer(ast: AcornNode, code: string, id: string): Analyzed {
         topScopeNode: dynamic === 'dynamic'
           ? undefined
           : findTopLevelScope(ancestors) as RequireStatement['topScopeNode'],
-        dynamic: checkDynamicId(node),
+        dynamic,
       })
     },
     AssignmentExpression(node) {
@@ -114,22 +114,11 @@ function findTopLevelScope(ancestors: AcornNode[]): AcornNode | undefined {
   const ances = ancestors.map(an => an.type).join()
   const arr = [...ancestors].reverse()
 
+  // TODO: better top-scope detect
+
   if (/Program,ExpressionStatement,(MemberExpression,)?CallExpression$/.test(ances)) {
     // Program,ExpressionStatement,CallExpression                  | require('foo')
     // Program,ExpressionStatement,MemberExpression,CallExpression | require('foo').bar
     return arr.find(e => e.type === TopScopeType.ExpressionStatement)
-  }
-
-  // TODO(#15): Loose conversion of `exports` is required to get elegant import statements, vice versa.
-  //            需要松散的 exports 转换，才能得到优雅的 import 语句，反之亦然。
-  // 🚨-①: Vite also does the same. All statements are imported as `*`, which is simple and easy to implement. :)
-  //       Vite 也是这么做的，所有语句都以 * 导入，即简单又好实现。
-  return
-
-  // At present, "ancestors" contains only one depth of "MemberExpression"
-  if (/Program,VariableDeclaration,VariableDeclarator,(MemberExpression,)?CallExpression$/.test(ances)) {
-    // const bar = require('foo').bar
-    // const { foo, bar: baz } = require('foo')
-    return arr.find(e => e.type === TopScopeType.VariableDeclaration)
   }
 }
