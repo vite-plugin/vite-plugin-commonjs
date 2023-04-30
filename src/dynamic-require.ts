@@ -5,8 +5,11 @@ import {
   mappingPath,
   globFiles,
 } from 'vite-plugin-dynamic-import'
-import { normalizePath } from 'vite-plugin-utils/function'
-import type { Options } from '.'
+import { normalizePath, COLOURS } from 'vite-plugin-utils/function'
+import {
+  type Options,
+  TAG,
+} from '.'
 import type { Analyzed } from './analyze'
 
 export interface DynamicRequireRecord {
@@ -35,13 +38,13 @@ export class DynaimcRequire {
     const importCache = new Map<string, string>(/* import-id, import-name */)
     const records: DynamicRequireRecord[] = []
 
-    for (const req of analyzed.require) {
-      const { node, dynamic } = req
+    for (const { dynamic, node } of analyzed.require) {
       if (dynamic !== 'dynamic') continue
 
+      const importExpression = analyzed.code.slice(node.start, node.end)
       const globResult = await globFiles({
         importeeNode: node.arguments[0],
-        importExpression: analyzed.code.slice(node.start, node.end),
+        importExpression,
         importer: analyzed.id,
         resolve: this.resolve,
         extensions: this.options.extensions,
@@ -57,12 +60,19 @@ export class DynaimcRequire {
         continue
       }
 
+      if (!files?.length) {
+        console.log(
+          TAG,
+          COLOURS.yellow(`no files matched: ${importExpression}\n`),
+          `  file: ${analyzed.id}`,
+        )
+        continue
+      }
+
       // skip itself
-      files = files!.filter(f => normalizePath(path.join(path.dirname(id), f)) !== id)
+      files = files.filter(f => normalizePath(path.join(path.dirname(id), f)) !== id)
       // execute the dynamic.onFiles
       options.dynamic?.onFiles && (files = options.dynamic?.onFiles(files, id) || files)
-
-      if (!files?.length) continue
 
       const maps = mappingPath(
         files,
