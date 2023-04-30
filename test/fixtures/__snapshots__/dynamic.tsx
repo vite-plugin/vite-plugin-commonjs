@@ -1,4 +1,4 @@
-/* import-require2import-S */ import * as __dynamic_require2import__0__0 from './module-exports/hello.cjs'; import * as __dynamic_require2import__0__1 from './module-exports/world.cjs'; /* import-require2import-E */function load(name) {
+/* [vite-plugin-commonjs] import-require2import-S */ import * as __dynamic_require2import__0__0 from './module-exports/hello.cjs'; import * as __dynamic_require2import__0__1 from './module-exports/world.cjs'; /* [vite-plugin-commonjs] import-require2import-E */function load(name) {
   const mod = function __matchRequireRuntime0__(path) {
   switch(path) {
     case '@/module-exports/hello':

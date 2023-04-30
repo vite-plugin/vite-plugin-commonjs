@@ -21,9 +21,9 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "test": "vite -c test/vite.config.ts",
+    "test": "vitest run",
     "types": "tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run test && npm run build"
   },
   "dependencies": {
     "acorn": "^8.8.2",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.16.2",
+    "node-fetch": "^3.3.1",
     "typescript": "^4.9.4",
     "vite": "^4.3.3",
     "vite-plugin-utils": "^0.4.3",
