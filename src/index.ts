@@ -9,11 +9,13 @@ import {
   KNOWN_CSS_TYPES,
 } from 'vite-plugin-utils/constant'
 import { MagicString, cleanUrl } from 'vite-plugin-utils/function'
-import { analyzer, TopScopeType } from './analyze'
+import { analyzer } from './analyze'
 import { generateImport } from './generate-import'
 import { generateExport } from './generate-export'
 import { isCommonjs } from './utils'
 import { DynaimcRequire } from './dynamic-require'
+
+export const TAG = '[vite-plugin-commonjs]'
 
 export interface Options {
   filter?: (id: string) => boolean | undefined
@@ -126,7 +128,7 @@ async function transformCommonjs({
 
   let ast: AcornNode
   try {
-    ast = parseAst(code, { ecmaVersion: 2020 }) as AcornNode
+    ast = parseAst(code, { sourceType: 'module', ecmaVersion: 2020 }) as AcornNode
   } catch (error) {
     // ignore as it might not be a JS file, the subsequent plugins will catch the error
     return null
@@ -159,24 +161,24 @@ async function transformCommonjs({
 
   if (hoistImports.length) {
     ms.prepend([
-      '/* [vite-plugin-commonjs] import-hoist-S */',
+      `/* ${TAG} import-hoist-S */`,
       ...hoistImports,
-      '/* [vite-plugin-commonjs] import-hoist-E */',
+      `/* ${TAG} import-hoist-E */`,
     ].join(' '))
   }
 
   // exports
   if (exportRuntime) {
     const polyfill = [
-      '/* [vite-plugin-commonjs] export-runtime-S */',
+      `/* ${TAG} export-runtime-S */`,
       exportRuntime.polyfill,
-      '/* [vite-plugin-commonjs] export-runtime-E */',
+      `/* ${TAG} export-runtime-E */`,
     ].join(' ')
 
     const _exports = [
-      '/* [vite-plugin-commonjs] export-statement-S */',
+      `/* ${TAG} export-statement-S */`,
       exportRuntime.exportDeclaration,
-      '/* [vite-plugin-commonjs] export-statement-E */',
+      `/* ${TAG} export-statement-E */`,
     ].filter(Boolean)
       .join('\n')
     ms.prepend(polyfill).append(_exports)
@@ -203,9 +205,9 @@ async function transformCommonjs({
 
     if (requires.length) {
       ms.prepend([
-        '/* [vite-plugin-commonjs] import-require2import-S */',
+        `/* ${TAG} import-require2import-S */`,
         ...requires,
-        '/* [vite-plugin-commonjs] import-require2import-E */',
+        `/* ${TAG} import-require2import-E */`,
       ].join(' '))
     }
     if (runtimes.length) {
