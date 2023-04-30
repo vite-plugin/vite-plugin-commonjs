@@ -147,35 +147,22 @@ async function transformCommonjs({
   for (const impt of imports) {
     const {
       node,
-      importee: imptee,
-      declaration,
-      importName,
-      topScopeNode,
+      importExpression,
+      importedName,
     } = impt
-    const importee = imptee + ';'
-
-    let importStatement: string | undefined
-    if (topScopeNode) {
-      if (topScopeNode.type === TopScopeType.ExpressionStatement) {
-        importStatement = importee
-      } else if (topScopeNode.type === TopScopeType.VariableDeclaration) {
-        importStatement = declaration ? `${importee} ${declaration};` : importee
-      }
-    } else {
+    if (importExpression && importedName) {
       // TODO: Merge duplicated require id
-      hoistImports.push(importee)
-      importStatement = importName
-    }
-
-    if (importStatement) {
-      const start = topScopeNode ? topScopeNode.start : node.start
-      const end = topScopeNode ? topScopeNode.end : node.end
-      ms.overwrite(start, end, importStatement)
+      hoistImports.push(importExpression + ';')
+      ms.overwrite(node.start, node.end, importedName)
     }
   }
 
   if (hoistImports.length) {
-    ms.prepend(['/* import-hoist-S */', ...hoistImports, '/* import-hoist-E */'].join(' '))
+    ms.prepend([
+      '/* [vite-plugin-commonjs] import-hoist-S */',
+      ...hoistImports,
+      '/* [vite-plugin-commonjs] import-hoist-E */',
+    ].join(' '))
   }
 
   // exports
@@ -215,7 +202,11 @@ async function transformCommonjs({
     }
 
     if (requires.length) {
-      ms.prepend(['/* [vite-plugin-commonjs] import-require2import-S */', ...requires, '/* [vite-plugin-commonjs] import-require2import-E */'].join(' '))
+      ms.prepend([
+        '/* [vite-plugin-commonjs] import-require2import-S */',
+        ...requires,
+        '/* [vite-plugin-commonjs] import-require2import-E */',
+      ].join(' '))
     }
     if (runtimes.length) {
       ms.append(runtimes.join('\n'))
