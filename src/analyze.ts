@@ -74,7 +74,8 @@ export function analyzer(ast: AcornNode, code: string, id: string): Analyzed {
     },
     AssignmentExpression(node) {
       if (node.left.type !== 'MemberExpression') return
-      if (!(node.left.object.type === 'Identifier' && ['module', 'exports'].includes(node.left.object.name))) return
+      // only `module.exports`, `exports.xxx`
+      if (!['module', 'exports'].includes(node.left.object.name)) return
 
       analyzed.exports.push({
         node,
