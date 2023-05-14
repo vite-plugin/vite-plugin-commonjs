@@ -1,3 +1,9 @@
+## 0.7.1 (2023-05-14)
+
+- ddfbfeb fix: bump vite-plugin-dynamic-import to 1.4.0 for `pnpm`
+- 356c22e chore: cleanup
+- 4e4f807 docs: update
+
 ## 0.7.0 (2023-04-30)
 
 - e9eb5f0 refactor(test): integrate vitest 🌱

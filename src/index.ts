@@ -67,7 +67,7 @@ export default function commonjs(options: Options = {}): Plugin {
       _config.optimizeDeps.esbuildOptions ??= {}
       _config.optimizeDeps.esbuildOptions.plugins ??= []
       _config.optimizeDeps.esbuildOptions.plugins.push({
-        name: 'vite-plugin-dynamic-import:pre-bundle',
+        name: 'vite-plugin-commonjs:pre-bundle',
         setup(build) {
           build.onLoad({ filter: /.*/ }, async ({ path: id }) => {
             let code: string

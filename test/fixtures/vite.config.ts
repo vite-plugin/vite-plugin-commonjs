@@ -11,7 +11,7 @@ export default defineConfig({
       name: 'vite-plugin-commonjs-test',
       transform(code, id) {
         if (/\/src\//.test(id)) {
-          // Write transformed code to output/
+          // write transformed code to dist/
           const filename = id.replace('src', 'dist')
           const dirname = path.dirname(filename)
           if (!fs.existsSync(dirname)) fs.mkdirSync(dirname)
