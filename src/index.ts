@@ -47,7 +47,6 @@ export default function commonjs(options: Options = {}): Plugin {
   let dynaimcRequire: DynaimcRequire
 
   return {
-    apply: 'serve',
     name: 'vite-plugin-commonjs',
     configResolved(_config) {
       config = _config
