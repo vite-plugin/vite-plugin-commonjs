@@ -1,3 +1,8 @@
+## 0.8.0 (2023-06-24)
+
+- bf2f306 fix: dynamic-require typo #28, closes [#28](https://github.com/vite-plugin/vite-plugin-commonjs/issues/28)
+- 66ce5dd feat: support build
+
 ## 0.7.1 (2023-05-14)
 
 - ddfbfeb fix: bump vite-plugin-dynamic-import to 1.4.0 for `pnpm`
