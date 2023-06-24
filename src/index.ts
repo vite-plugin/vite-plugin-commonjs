@@ -47,7 +47,6 @@ export default function commonjs(options: Options = {}): Plugin {
   let dynaimcRequire: DynaimcRequire
 
   return {
-    apply: 'serve',
     name: 'vite-plugin-commonjs',
     configResolved(_config) {
       config = _config
@@ -199,7 +198,7 @@ async function transformCommonjs({
       } else if (dymc) {
         requires.push(...dymc.importee.map(impt => impt + ';'))
         runtimes.push(dymc.runtimeFn)
-        ms.overwrite(node.callee.start, node.callee.end, dymc.runtimeFn)
+        ms.overwrite(node.callee.start, node.callee.end, dymc.runtimeName)
       }
     }
 
