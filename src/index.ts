@@ -198,7 +198,7 @@ async function transformCommonjs({
       } else if (dymc) {
         requires.push(...dymc.importee.map(impt => impt + ';'))
         runtimes.push(dymc.runtimeFn)
-        ms.overwrite(node.callee.start, node.callee.end, dymc.runtimeFn)
+        ms.overwrite(node.callee.start, node.callee.end, dymc.runtimeName)
       }
     }
 
