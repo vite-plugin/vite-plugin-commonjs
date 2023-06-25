@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import type { Plugin, ResolvedConfig } from 'vite'
+import type { Loader } from 'esbuild'
 import { parse as parseAst } from 'acorn'
 import {
   DEFAULT_EXTENSIONS,
@@ -85,7 +86,10 @@ export default function commonjs(options: Options = {}): Plugin {
             })
 
             if (contents != null) {
-              return { contents }
+              return {
+                contents,
+                loader: id.slice(id.lastIndexOf('.') + 1) as Loader,
+              }
             }
           })
         },
