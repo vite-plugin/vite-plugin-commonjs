@@ -165,3 +165,6 @@ const bar = __CJS__import__0__
 - a11aeaf test: v0.5.2
 - 83d9f3d docs: v0.5.2
 - b7e02cd refactor: move `options.onFiles` to `options.dynamic.onFiles`
+
+## [2022-06-24] v0.8.1
+- 3297ca1 fix: source maps are not correct

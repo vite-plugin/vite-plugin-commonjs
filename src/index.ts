@@ -118,10 +118,10 @@ async function transformCommonjs({
   dynaimcRequire: DynaimcRequire,
 }): Promise<{ code: string; map: SourceMapInput; } | null | undefined> {
   if (!(extensions.includes(path.extname(id)) || extensions.includes(path.extname(cleanUrl(id))))) return
-  if (!isCommonjs(code)) return 
+  if (!isCommonjs(code)) return
 
   const userCondition = options.filter?.(id)
-  if (userCondition === false) return 
+  if (userCondition === false) return
   // exclude `node_modules` by default
   // here can only get the files in `node_modules/.vite` and `node_modules/vite/dist/client`, others will be handled by Pre-Bundling
   if (userCondition !== true && id.includes('node_modules')) return
