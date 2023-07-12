@@ -1,3 +1,10 @@
+## 0.8.1 (2023-07-12)
+
+- dfd8742 feat: generate sourcemap #28
+- 4257aa6 chore: remove `build.test.ts`
+- 23b7cdf fix: correct esbuild loader
+- ef781ec Merge pull request #29 from vite-plugin/v0.8.0
+
 ## 0.8.0 (2023-06-24)
 
 - bf2f306 fix: dynamic-require typo #28, closes [#28](https://github.com/vite-plugin/vite-plugin-commonjs/issues/28)
