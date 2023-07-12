@@ -1,14 +1,17 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import type { Plugin, ResolvedConfig } from 'vite'
+import type { SourceMapInput } from 'rollup'
+import type { Loader } from 'esbuild'
 import { parse as parseAst } from 'acorn'
+import MagicString from 'magic-string'
 import {
   DEFAULT_EXTENSIONS,
   KNOWN_SFC_EXTENSIONS,
   KNOWN_ASSET_TYPES,
   KNOWN_CSS_TYPES,
 } from 'vite-plugin-utils/constant'
-import { MagicString, cleanUrl } from 'vite-plugin-utils/function'
+import { cleanUrl } from 'vite-plugin-utils/function'
 import { analyzer } from './analyze'
 import { generateImport } from './generate-import'
 import { generateExport } from './generate-export'
@@ -76,7 +79,7 @@ export default function commonjs(options: Options = {}): Plugin {
               return
             }
 
-            const contents = await transformCommonjs({
+            const result = await transformCommonjs({
               options,
               code,
               id,
@@ -84,8 +87,11 @@ export default function commonjs(options: Options = {}): Plugin {
               dynaimcRequire,
             })
 
-            if (contents != null) {
-              return { contents }
+            if (result != null) {
+              return {
+                contents: result.code,
+                loader: id.slice(id.lastIndexOf('.') + 1) as Loader,
+              }
             }
           })
         },
@@ -115,7 +121,7 @@ async function transformCommonjs({
   id: string,
   extensions: string[],
   dynaimcRequire: DynaimcRequire,
-}) {
+}): Promise<{ code: string; map: SourceMapInput; } | null | undefined> {
   if (!(extensions.includes(path.extname(id)) || extensions.includes(path.extname(cleanUrl(id))))) return
   if (!isCommonjs(code)) return
 
@@ -214,6 +220,10 @@ async function transformCommonjs({
     }
   }
 
-  const str = ms.toString()
-  return str !== code ? str : null
+  if (ms.hasChanged()) {
+    return {
+      code: ms.toString(),
+      map: ms.generateMap({ hires: true, source: id }),
+    }
+  }
 }
