@@ -1,3 +1,7 @@
+## 0.8.2 (2023-07-17)
+
+- feat: update to ES2023 #32, closes [#32](https://github.com/vite-plugin/vite-plugin-commonjs/issues/32)
+
 ## 0.8.1 (2023-07-12)
 
 - dfd8742 feat: generate sourcemap #28
