@@ -133,7 +133,7 @@ async function transformCommonjs({
 
   let ast: AcornNode
   try {
-    ast = parseAst(code, { sourceType: 'module', ecmaVersion: 2020 }) as AcornNode
+    ast = parseAst(code, { sourceType: 'module', ecmaVersion: 14 }) as AcornNode
   } catch (error) {
     // ignore as it might not be a JS file, the subsequent plugins will catch the error
     return null
