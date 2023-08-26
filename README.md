@@ -51,6 +51,10 @@ export interface Options {
     */
     onFiles?: (files: string[], id: string) => typeof files | undefined
   }
+  advanced?: {
+    /** Custom import behavior */
+    importRules?: ImportType | ((id: string) => ImportType)
+  }
 }
 ```
 
