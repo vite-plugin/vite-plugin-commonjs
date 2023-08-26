@@ -1,3 +1,13 @@
+## 0.8.2 (2023-08-26)
+
+- 49e77ca chore: update test
+- 61a9fe5 chore: code format
+- c1e1ceb feat: support advanced import rules option
+
+#### PR
+
+- @Jinjiang feat: support advanced import rules option #35
+
 ## 0.8.2 (2023-07-17)
 
 - feat: update to ES2023 #32, closes [#32](https://github.com/vite-plugin/vite-plugin-commonjs/issues/32)
