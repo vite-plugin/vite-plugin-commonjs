@@ -20,6 +20,8 @@ import { DynaimcRequire } from './dynamic-require'
 
 export const TAG = '[vite-plugin-commonjs]'
 
+export type ImportType = 'defaultFirst' | 'namedFirst' | 'merge'
+
 export interface Options {
   filter?: (id: string) => boolean | undefined
   dynamic?: {
@@ -41,6 +43,9 @@ export interface Options {
      * ```
     */
     onFiles?: (files: string[], id: string) => typeof files | undefined
+  }
+  advanced?: {
+    importRules?: ImportType | ((id: string) => ImportType)
   }
 }
 
@@ -140,7 +145,7 @@ async function transformCommonjs({
   }
 
   const analyzed = analyzer(ast, code, id)
-  const imports = generateImport(analyzed)
+  const imports = generateImport(analyzed, id, options.advanced?.importRules)
   const exportRuntime = id.includes('node_modules/.vite')
     // Bypass Pre-build
     ? null

@@ -1,3 +1,4 @@
+import type { ImportType } from 'src'
 import type { Analyzed } from './analyze'
 
 export interface ImportRecord {
@@ -6,7 +7,7 @@ export interface ImportRecord {
   importedName?: string
 }
 
-export function generateImport(analyzed: Analyzed) {
+export function generateImport(analyzed: Analyzed, id: string, rules?: ImportType | ((id: string) => ImportType)) {
   const imports: ImportRecord[] = []
   let count = 0
 
@@ -34,9 +35,28 @@ export function generateImport(analyzed: Analyzed) {
          ${'^'.repeat(codeSnippets.length)}`)
     }
 
-    // This is probably less accurate but is much cheaper than a full AST parse.
-    impt.importExpression = `import * as ${importName} from '${requireId}'`
-    impt.importedName = `${importName}.default || ${importName}` // Loose
+    // This is probably less accurate, but is much cheaper than a full AST parse.
+    let importType: ImportType = 'defaultFirst'
+    if (typeof rules === 'string') {
+      importType = rules
+    } else if (typeof rules === 'function') {
+      importType = rules(id) || 'defaultFirst'
+    }
+
+    impt.importExpression = `import * as ${importName} from "${requireId}"`
+    switch (importType) {
+      case 'defaultFirst':
+        impt.importedName = `${importName}.default || ${importName}`
+        break
+      case 'namedFirst':
+        impt.importedName = `Object.keys(${importName}).join('') !== 'default' ? ${importName} : ${importName}.default`
+        break
+      case 'merge':
+        impt.importedName = `${importName}.default ? Object.assign(${importName}.default, ${importName}) : ${importName}`
+        break
+      default:
+        throw new Error(`Unknown import type: ${importType} for ${id}`)
+    }
 
     imports.push(impt)
   }
