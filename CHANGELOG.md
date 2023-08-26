@@ -1,4 +1,4 @@
-## 0.8.2 (2023-08-26)
+## 0.9.0 (2023-08-26)
 
 - 49e77ca chore: update test
 - 61a9fe5 chore: code format
