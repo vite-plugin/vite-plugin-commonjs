@@ -35,17 +35,15 @@ export function generateImport(analyzed: Analyzed, id: string, rules?: ImportTyp
          ${'^'.repeat(codeSnippets.length)}`)
     }
 
-    // This is probably less accurate but is much cheaper than a full AST parse.
+    // This is probably less accurate, but is much cheaper than a full AST parse.
     let importType: ImportType = 'defaultFirst'
-    if (rules) {
-      if (typeof rules === 'string') {
-        importType = rules
-      }
-      if (typeof rules === 'function') {
-        importType = rules(id) || 'defaultFirst'
-      }
+    if (typeof rules === 'string') {
+      importType = rules
+    } else if (typeof rules === 'function') {
+      importType = rules(id) || 'defaultFirst'
     }
-    impt.importExpression = `import * as ${importName} from '${requireId}'`
+
+    impt.importExpression = `import * as ${importName} from "${requireId}"`
     switch (importType) {
       case 'defaultFirst':
         impt.importedName = `${importName}.default || ${importName}`
@@ -54,7 +52,7 @@ export function generateImport(analyzed: Analyzed, id: string, rules?: ImportTyp
         impt.importedName = `Object.keys(${importName}).join('') !== 'default' ? ${importName} : ${importName}.default`
         break
       case 'merge':
-        impt.importedName = `${importName}.default ? Object.assign(${importName}.default, ${importName}) : ${importName}`;
+        impt.importedName = `${importName}.default ? Object.assign(${importName}.default, ${importName}) : ${importName}`
         break
       default:
         throw new Error(`Unknown import type: ${importType} for ${id}`)
