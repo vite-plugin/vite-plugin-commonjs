@@ -10,10 +10,6 @@ English | [简体中文](https://github.com/vite-plugin/vite-plugin-commonjs/blo
 ✅ bare module(node_modules)  
 ✅ dynamic-require similar to 👉 [Webpack](https://webpack.js.org/guides/dependency-management/#require-with-expression) `require('./foo/' + bar)`
 
-📦 Out of the box  
-🔨 Work only in the `vite serve` phase  
-🚚 In the `vite build` phase, CommonJs syntax will be supported by builtin [@rollup/plugin-commonjs](https://www.npmjs.com/package/@rollup/plugin-commonjs)  
-
 ## Usage
 
 ```js
