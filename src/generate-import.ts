@@ -1,13 +1,14 @@
-import type { ImportType } from 'src'
+import type { CommonjsOptions, ImportInteropType } from 'src'
 import type { Analyzed } from './analyze'
 
 export interface ImportRecord {
   node: AcornNode
   importExpression?: string
-  importedName?: string
+  importInterop?: string
 }
 
-export function generateImport(analyzed: Analyzed, id: string, rules?: ImportType | ((id: string) => ImportType)) {
+export function generateImport(analyzed: Analyzed, id: string, options: CommonjsOptions) {
+  const { importRules } = options.advanced ?? {}
   const imports: ImportRecord[] = []
   let count = 0
 
@@ -36,26 +37,27 @@ export function generateImport(analyzed: Analyzed, id: string, rules?: ImportTyp
     }
 
     // This is probably less accurate, but is much cheaper than a full AST parse.
-    let importType: ImportType = 'defaultFirst'
-    if (typeof rules === 'string') {
-      importType = rules
-    } else if (typeof rules === 'function') {
-      importType = rules(id) || 'defaultFirst'
+    let importInterop: ImportInteropType | string = 'defaultFirst'
+    if (typeof importRules === 'string') {
+      importInterop = importRules
+    } else if (typeof importRules === 'function') {
+      importInterop = importRules(id)
     }
 
     impt.importExpression = `import * as ${importName} from "${requireId}"`
-    switch (importType) {
+    switch (importInterop) {
       case 'defaultFirst':
-        impt.importedName = `${importName}.default || ${importName}`
+        impt.importInterop = `${importName}.default || ${importName}`
         break
       case 'namedFirst':
-        impt.importedName = `Object.keys(${importName}).join('') !== 'default' ? ${importName} : ${importName}.default`
+        impt.importInterop = `Object.keys(${importName}).join('') !== "default" ? ${importName} : ${importName}.default`
         break
       case 'merge':
-        impt.importedName = `${importName}.default ? Object.assign(${importName}.default, ${importName}) : ${importName}`
+        impt.importInterop = `${importName}.default ? Object.assign(${importName}.default, ${importName}) : ${importName}`
         break
       default:
-        throw new Error(`Unknown import type: ${importType} for ${id}`)
+        // User-defined module interop.
+        impt.importInterop = importInterop // string | undefined
     }
 
     imports.push(impt)
