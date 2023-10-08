@@ -25,7 +25,7 @@ export default {
 ## API <sub><sup>(Define)</sup></sub>
 
 ```ts
-export interface Options {
+export interface CommonjsOptions {
   filter?: (id: string) => boolean | undefined
   dynamic?: {
     /**
@@ -48,8 +48,13 @@ export interface Options {
     onFiles?: (files: string[], id: string) => typeof files | undefined
   }
   advanced?: {
-    /** Custom import behavior */
-    importRules?: ImportType | ((id: string) => ImportType)
+    /**
+     * Custom import module interop behavior.
+     * 
+     * If you want to fully customize the interop behavior, 
+     * you can pass a function and return the interop code snippet.
+     */
+    importRules?: ImportInteropType | ((id: string) => ImportInteropType | string)
   }
 }
 ```
