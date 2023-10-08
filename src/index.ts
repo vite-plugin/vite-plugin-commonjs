@@ -20,9 +20,9 @@ import { DynaimcRequire } from './dynamic-require'
 
 export const TAG = '[vite-plugin-commonjs]'
 
-export type ImportType = 'defaultFirst' | 'namedFirst' | 'merge'
+export type ImportInteropType = 'defaultFirst' | 'namedFirst' | 'merge'
 
-export interface Options {
+export interface CommonjsOptions {
   filter?: (id: string) => boolean | undefined
   dynamic?: {
     /**
@@ -45,12 +45,17 @@ export interface Options {
     onFiles?: (files: string[], id: string) => typeof files | undefined
   }
   advanced?: {
-    /** Custom import behavior */
-    importRules?: ImportType | ((id: string) => ImportType)
+    /**
+     * Custom import module interop behavior.
+     * 
+     * If you want to fully customize the interop behavior, 
+     * you can pass a function and return the interop code snippet.
+     */
+    importRules?: ImportInteropType | ((id: string) => ImportInteropType | string)
   }
 }
 
-export default function commonjs(options: Options = {}): Plugin {
+export default function commonjs(options: CommonjsOptions = {}): Plugin {
   let config: ResolvedConfig
   let extensions = DEFAULT_EXTENSIONS
   let dynaimcRequire: DynaimcRequire
@@ -122,7 +127,7 @@ async function transformCommonjs({
   extensions,
   dynaimcRequire,
 }: {
-  options: Options,
+  options: CommonjsOptions,
   code: string,
   id: string,
   extensions: string[],
@@ -146,7 +151,7 @@ async function transformCommonjs({
   }
 
   const analyzed = analyzer(ast, code, id)
-  const imports = generateImport(analyzed, id, options.advanced?.importRules)
+  const imports = generateImport(analyzed, id, options)
   const exportRuntime = id.includes('node_modules/.vite')
     // Bypass Pre-build
     ? null
@@ -161,12 +166,12 @@ async function transformCommonjs({
     const {
       node,
       importExpression,
-      importedName,
+      importInterop,
     } = impt
-    if (importExpression && importedName) {
+    if (importExpression != null && importInterop != null) {
       // TODO: Merge duplicated require id
       hoistImports.push(importExpression + ';')
-      ms.overwrite(node.start, node.end, importedName)
+      ms.overwrite(node.start, node.end, importInterop)
     }
   }
 

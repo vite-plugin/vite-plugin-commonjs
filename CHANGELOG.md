@@ -1,3 +1,11 @@
+## 0.10.0 (2023-10-08)
+
+- c286fe2 chore: backup files
+- f1e672b chore: update test v0.10.0
+- 63324c2 chore: backup export
+- 2eefcbc fix: always export `default`
+- de0a56e feat: supports full module interop
+
 ## 0.9.0 (2023-08-26)
 
 - 49e77ca chore: update test

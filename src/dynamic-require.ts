@@ -7,7 +7,7 @@ import {
 } from 'vite-plugin-dynamic-import'
 import { normalizePath, COLOURS } from 'vite-plugin-utils/function'
 import {
-  type Options,
+  type CommonjsOptions,
   TAG,
 } from '.'
 import type { Analyzed } from './analyze'
@@ -27,7 +27,7 @@ export class DynaimcRequire {
 
   constructor(
     private config: ResolvedConfig,
-    private options: Options & { extensions: string[] },
+    private options: CommonjsOptions & { extensions: string[] },
     private resolve = new Resolve(config),
   ) { }
 
