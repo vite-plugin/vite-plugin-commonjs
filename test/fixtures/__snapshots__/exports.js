@@ -22,8 +22,10 @@ import cjs from './cjs'
 cjs: ${JSON.stringify(cjs)}
 `
 /* [vite-plugin-commonjs] export-statement-S */
+const __CJS__export_default__ = (module.exports == null ? {} : module.exports).default || module.exports;
 const __CJS__export_msg__ = (module.exports == null ? {} : module.exports).msg;
 export {
+  __CJS__export_default__ as default,
   __CJS__export_msg__ as msg,
 }
 /* [vite-plugin-commonjs] export-statement-E */
