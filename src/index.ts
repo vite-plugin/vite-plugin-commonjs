@@ -227,7 +227,7 @@ async function transformCommonjs({
       ].join(' '))
     }
     if (runtimes.length) {
-      ms.append(runtimes.join('\n'))
+      ms.append('\n' + runtimes.join('\n'))
     }
   }
 

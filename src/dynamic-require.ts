@@ -35,6 +35,7 @@ export class DynaimcRequire {
     const options = this.options
     const id = analyzed.id
     let counter = 0
+    let requireCounter = 0
     const importCache = new Map<string, string>(/* import-id, import-name */)
     const records: DynamicRequireRecord[] = []
 
@@ -81,7 +82,7 @@ export class DynaimcRequire {
       let counter2 = 0
       record.dynaimc = {
         importee: [],
-        runtimeName: `__matchRequireRuntime${counter}__`,
+        runtimeName: `__matchRequireRuntime${counter}__${requireCounter}`,
         runtimeFn: '', // to be immediately set
       }
 
@@ -91,14 +92,16 @@ export class DynaimcRequire {
         if (!dynamic_require2import) {
           importCache.set(
             localFile,
-            dynamic_require2import = `__dynamic_require2import__${counter}__${counter2++}`,
+            dynamic_require2import = `__dynamic_require2import__${counter}__${requireCounter}__${counter2++}`,
           )
+          record.dynaimc.importee.push(`import * as ${dynamic_require2import} from '${localFile}'`);
         }
 
-        record.dynaimc.importee.push(`import * as ${dynamic_require2import} from '${localFile}'`)
+        const importInterop = `${dynamic_require2import}.default || ${dynamic_require2import}`
+
         cases.push(importeeList
           .map(importee => `    case '${importee}':`)
-          .concat(`      return ${dynamic_require2import};`)
+          .concat(`      return ${importInterop};`)
           .join('\n'))
       }
 
@@ -108,7 +111,7 @@ ${cases.join('\n')}
     default: throw new Error("Cann't found module: " + path);
   }
 }`
-
+      requireCounter++
       records.push(record)
     }
 
