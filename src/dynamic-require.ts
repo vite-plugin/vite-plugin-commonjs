@@ -35,7 +35,6 @@ export class DynaimcRequire {
     const options = this.options
     const id = analyzed.id
     let counter = 0
-    let requireCounter = 0
     const importCache = new Map<string, string>(/* import-id, import-name */)
     const records: DynamicRequireRecord[] = []
 
@@ -82,7 +81,7 @@ export class DynaimcRequire {
       let counter2 = 0
       record.dynaimc = {
         importee: [],
-        runtimeName: `__matchRequireRuntime${counter}__${requireCounter}`,
+        runtimeName: `__matchRequireRuntime${counter}`,
         runtimeFn: '', // to be immediately set
       }
 
@@ -92,7 +91,7 @@ export class DynaimcRequire {
         if (!dynamic_require2import) {
           importCache.set(
             localFile,
-            dynamic_require2import = `__dynamic_require2import__${counter}__${requireCounter}__${counter2++}`,
+            dynamic_require2import = `__dynamic_require2import__${counter}__${counter2++}`,
           )
           record.dynaimc.importee.push(`import * as ${dynamic_require2import} from '${localFile}'`);
         }
@@ -111,7 +110,7 @@ ${cases.join('\n')}
     default: throw new Error("Cann't found module: " + path);
   }
 }`
-      requireCounter++
+      counter++
       records.push(record)
     }
 
