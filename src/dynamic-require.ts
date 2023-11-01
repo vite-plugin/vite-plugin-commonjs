@@ -81,7 +81,7 @@ export class DynaimcRequire {
       let counter2 = 0
       record.dynaimc = {
         importee: [],
-        runtimeName: `__matchRequireRuntime${counter}`,
+        runtimeName: `__matchRequireRuntime${counter}__`,
         runtimeFn: '', // to be immediately set
       }
 
