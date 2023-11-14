@@ -1,3 +1,7 @@
+## 0.10.1 (2023-11-14)
+
+- 492aab3 fix(#42): auto-increment dynamic require id
+
 ## 0.10.0 (2023-10-08)
 
 - c286fe2 chore: backup files
