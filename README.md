@@ -48,13 +48,21 @@ export interface CommonjsOptions {
     onFiles?: (files: string[], id: string) => typeof files | undefined
   }
   advanced?: {
-    /**
-     * Custom import module interop behavior.
-     * 
-     * If you want to fully customize the interop behavior, 
-     * you can pass a function and return the interop code snippet.
-     */
-    importRules?: ImportInteropType | ((id: string) => ImportInteropType | string)
+      /**
+       * Custom import module interop behavior.
+       *
+       * If you want to fully customize the interop behavior,
+       * you can pass a function and return the interop code snippet.
+       */
+      importRules?: ImportInteropType | ((id: string) => ImportInteropType | string)
+
+      /**
+       * Custom import ID handler.
+       *
+       * If you want to fully customize the generated import value,
+       * you can pass a function and return the proper name.
+       */
+      namingRules?: (id: string, node: AcornNode) => string
   }
 }
 ```
