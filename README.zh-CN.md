@@ -10,6 +10,8 @@
 ✅ bare module(node_modules)  
 ✅ dynamic-require 和 👉 [Webpack](https://webpack.js.org/guides/dependency-management/#require-with-expression) `require('./foo/' + bar)`类似  
 
+## [细说 Vite 构建 CommonJS 问题](./commonjs.zh-CN.md)
+
 ## 使用
 
 ```js

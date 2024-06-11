@@ -10,6 +10,8 @@ English | [简体中文](https://github.com/vite-plugin/vite-plugin-commonjs/blo
 ✅ bare module(node_modules)  
 ✅ dynamic-require similar to 👉 [Webpack](https://webpack.js.org/guides/dependency-management/#require-with-expression) `require('./foo/' + bar)`
 
+## [Elaborate on Vite building CommonJS issues](./commonjs.zh-CN.md)
+
 ## Usage
 
 ```js
