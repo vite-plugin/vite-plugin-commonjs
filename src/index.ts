@@ -171,7 +171,7 @@ async function transformCommonjs({
     if (importExpression != null && importInterop != null) {
       // TODO: Merge duplicated require id
       hoistImports.push(importExpression + ';')
-      ms.overwrite(node.start, node.end, importInterop)
+      ms.overwrite(node.start, node.end, `(${importInterop})`)
     }
   }
 
