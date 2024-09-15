@@ -1,3 +1,10 @@
+## 0.10.2 (2023-09-15)
+
+- 7704cd4 chore: add comments
+- 5c3e702 bugfix #54
+- 5e3294e docs: add commonjs.zh-CN.md link
+- ff77d51 feat: add commonjs.zh-CN.md, commonjs.jpg
+
 ## 0.10.1 (2023-11-14)
 
 - 492aab3 fix(#42): auto-increment dynamic require id
