@@ -1,5 +1,5 @@
 /* [vite-plugin-commonjs] export-runtime-S */ var module = { exports: {} }; var exports = module.exports; /* [vite-plugin-commonjs] export-runtime-E *//* [vite-plugin-commonjs] import-hoist-S */ import * as __CJS__import__0__ from "./dynamic"; /* [vite-plugin-commonjs] import-hoist-E */
-const { hello, world } = __CJS__import__0__.default || __CJS__import__0__
+const { hello, world } = (__CJS__import__0__.default || __CJS__import__0__)
 
 // ❌ `exports` exported members are dynamic.
 // import { cjs } from './cjs'

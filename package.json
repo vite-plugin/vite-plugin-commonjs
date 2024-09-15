@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-commonjs",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "A pure JavaScript implementation of CommonJs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
