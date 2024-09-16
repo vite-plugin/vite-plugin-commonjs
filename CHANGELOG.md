@@ -1,3 +1,8 @@
+## 0.10.3 (2023-09-16)
+
+- e369497 chore: bump deps
+- 7c9ee77 fix: works with `@vitejs/plugin-vue2` #49
+
 ## 0.10.2 (2023-09-15)
 
 - 7704cd4 chore: add comments
