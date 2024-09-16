@@ -5,6 +5,7 @@
 }
 export const hello = `[dynamic.tsx] ${load("hello.cjs").default}`;
 export const world = `[dynamic.tsx] ${load("world.cjs").default}`;
+
 function __matchRequireRuntime0__(path) {
   switch(path) {
     case '@/module-exports/hello':
