@@ -16,7 +16,7 @@ import { analyzer } from './analyze'
 import { generateImport } from './generate-import'
 import { generateExport } from './generate-export'
 import { isCommonjs } from './utils'
-import { DynaimcRequire } from './dynamic-require'
+import { DynamicRequire } from './dynamic-require'
 
 export const TAG = '[vite-plugin-commonjs]'
 
@@ -58,7 +58,7 @@ export interface CommonjsOptions {
 export default function commonjs(options: CommonjsOptions = {}): Plugin {
   let config: ResolvedConfig
   let extensions = DEFAULT_EXTENSIONS
-  let dynaimcRequire: DynaimcRequire
+  let dynamicRequire: DynamicRequire
 
   return {
     name: 'vite-plugin-commonjs',
@@ -66,7 +66,7 @@ export default function commonjs(options: CommonjsOptions = {}): Plugin {
       config = _config
       // https://github.com/vitejs/vite/blob/v4.3.0/packages/vite/src/node/config.ts#L498
       if (config.resolve?.extensions) extensions = config.resolve.extensions
-      dynaimcRequire = new DynaimcRequire(_config, {
+      dynamicRequire = new DynamicRequire(_config, {
         ...options,
         extensions: [
           ...extensions,
@@ -95,7 +95,7 @@ export default function commonjs(options: CommonjsOptions = {}): Plugin {
               code,
               id,
               extensions,
-              dynaimcRequire,
+              dynamicRequire,
             })
 
             if (result != null) {
@@ -114,7 +114,7 @@ export default function commonjs(options: CommonjsOptions = {}): Plugin {
         code,
         id,
         extensions,
-        dynaimcRequire,
+        dynamicRequire: dynamicRequire,
       })
     },
   }
@@ -125,13 +125,13 @@ async function transformCommonjs({
   code,
   id,
   extensions,
-  dynaimcRequire,
+  dynamicRequire,
 }: {
   options: CommonjsOptions,
   code: string,
   id: string,
   extensions: string[],
-  dynaimcRequire: DynaimcRequire,
+  dynamicRequire: DynamicRequire,
 }): Promise<{ code: string; map: SourceMapInput; } | null | undefined> {
   if (!(extensions.includes(path.extname(id)) || extensions.includes(path.extname(cleanUrl(id))))) return
   if (!isCommonjs(code)) return
@@ -156,7 +156,7 @@ async function transformCommonjs({
     // Bypass Pre-build
     ? null
     : generateExport(analyzed)
-  const dynamics = await dynaimcRequire.generateRuntime(analyzed)
+  const dynamics = await dynamicRequire.generateRuntime(analyzed)
 
   const hoistImports = []
   const ms = new MagicString(code)
@@ -208,7 +208,7 @@ async function transformCommonjs({
     let count = 0
 
     for (const dynamic of dynamics) {
-      const { node, normally, dynaimc: dymc } = dynamic
+      const { node, normally, dynamic: dymc } = dynamic
       if (normally) {
         const name = `__require2import__${count++}__`
         requires.push(`import * as ${name} from "${normally}";`)
