@@ -1,3 +1,8 @@
+## 0.10.4 (2024-11-21)
+
+- b1ff4b6 feat: bump vite-plugin-utils to 0.4.4 to support `.cjs`, `.cts` extension by default
+- debe58a fix: bump vite-plugin-utils to 0.4.4 for large cjs bundles #62
+
 ## 0.10.3 (2023-09-16)
 
 - e369497 chore: bump deps
