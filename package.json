@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-commonjs",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "description": "A pure JavaScript implementation of CommonJs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -36,7 +36,7 @@
     "node-fetch": "^3.3.2",
     "typescript": "^5.6.2",
     "vite": "^4.4.5",
-    "vite-plugin-utils": "^0.4.3",
+    "vite-plugin-utils": "^0.4.5",
     "vitest": "^2.1.1"
   },
   "keywords": [
