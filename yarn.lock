@@ -818,10 +818,10 @@ vite-plugin-dynamic-import@^1.6.0:
     fast-glob "^3.3.2"
     magic-string "^0.30.11"
 
-vite-plugin-utils@^0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/vite-plugin-utils/-/vite-plugin-utils-0.4.4.tgz#ae43712f121e52690b23bbe675fd4a55d9c19521"
-  integrity sha512-5Gvbw3a8KWy5OJwQB7zavTrUYL0H54HbSY77ZZMPeZVMZiEV/unpELFW/hLswnbXOJMqHyBX2s+FfoYkxD+rzA==
+vite-plugin-utils@^0.4.5:
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/vite-plugin-utils/-/vite-plugin-utils-0.4.5.tgz#b6f71309b3ad36592b02ea88faf2cdbf075669ca"
+  integrity sha512-ZkKUIsNhyDNRWhp29oL96Ys0EzU4sqnNxa/z82vTLeAODDx4i4M9SjyIkDpPjiYnqRtYdjJo+eru7DTOXQ/o9A==
 
 vite@^4.4.5:
   version "4.5.3"
