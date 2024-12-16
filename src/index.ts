@@ -51,7 +51,15 @@ export interface CommonjsOptions {
      * If you want to fully customize the interop behavior, 
      * you can pass a function and return the interop code snippet.
      */
-    importRules?: ImportInteropType | ((id: string) => ImportInteropType | string)
+    importRules?: ImportInteropType | ((id: string) => ImportInteropType | string),
+
+    /**
+     * Custom import ID handler.
+     *
+     * If you want to fully customize the generated import value,
+     * you can pass a function and return the proper name.
+     */
+    namingRules?: (id: string, node: AcornNode) => string
   }
 }
 

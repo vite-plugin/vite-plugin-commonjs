@@ -8,7 +8,7 @@ export interface ImportRecord {
 }
 
 export function generateImport(analyzed: Analyzed, id: string, options: CommonjsOptions) {
-  const { importRules } = options.advanced ?? {}
+  const { namingRules, importRules } = options.advanced ?? {}
   const imports: ImportRecord[] = []
   let count = 0
 
@@ -34,6 +34,10 @@ export function generateImport(analyzed: Analyzed, id: string, options: Commonjs
       throw new Error(`The following require statement cannot be converted.
       -> ${codeSnippets}
          ${'^'.repeat(codeSnippets.length)}`)
+    }
+
+    if (typeof namingRules === 'function') {
+        requireId = namingRules(requireId, node)
     }
 
     // This is probably less accurate, but is much cheaper than a full AST parse.
