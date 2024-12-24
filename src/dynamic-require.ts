@@ -16,14 +16,14 @@ export interface DynamicRequireRecord {
   node: AcornNode
   /** normally path */
   normally?: string
-  dynaimc?: {
+  dynamic?: {
     importee: string[]
     runtimeName: string
     runtimeFn: string
   }
 }
 
-export class DynaimcRequire {
+export class DynamicRequire {
 
   constructor(
     private config: ResolvedConfig,
@@ -79,7 +79,7 @@ export class DynaimcRequire {
         resolved ? { [resolved.alias.relative]: resolved.alias.findString } : undefined,
       )
       let counter2 = 0
-      record.dynaimc = {
+      record.dynamic = {
         importee: [],
         runtimeName: `__matchRequireRuntime${counter++}__`,
         runtimeFn: '', // to be immediately set
@@ -95,14 +95,14 @@ export class DynaimcRequire {
           )
         }
 
-        record.dynaimc.importee.push(`import * as ${dynamic_require2import} from '${localFile}'`)
+        record.dynamic.importee.push(`import * as ${dynamic_require2import} from '${localFile}'`)
         cases.push(importeeList
           .map(importee => `    case '${importee}':`)
           .concat(`      return ${dynamic_require2import};`)
           .join('\n'))
       }
 
-      record.dynaimc.runtimeFn = `function ${record.dynaimc.runtimeName}(path) {
+      record.dynamic.runtimeFn = `function ${record.dynamic.runtimeName}(path) {
   switch(path) {
 ${cases.join('\n')}
     default: throw new Error("Cann't found module: " + path);
